@@ -18,8 +18,8 @@ workspace "dat-gameboy"
 	}
 
 output_path         = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-binaries_path       = "%{wks.location}build/bin/" .. "%{output_path}"
-intermediate_path   = "%{wks.location}build/intermediate/" .. "%{output_path}"
+binaries_path       = "%{wks.location}/build/bin/" .. "%{output_path}"
+intermediate_path   = "%{wks.location}/build/intermediate/" .. "%{output_path}"
 vendor_path         = "%{wks.location}/vendor/"
 
 group "dependencies"
