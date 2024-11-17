@@ -23,3 +23,6 @@
 [submodule "vendor/googletest"]
 	path = vendor/googletest
 	url = https://github.com/google/googletest
+[submodule "vendor/gameboy_tests"]
+	path = vendor/gameboy_tests
+	url = https://github.com/adtennant/GameboyCPUTests
