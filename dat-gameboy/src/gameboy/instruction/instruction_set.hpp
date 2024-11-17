@@ -1,4 +1,5 @@
 #pragma once
+#include <nlohmann/json.hpp>
 #include <unordered_map>
 
 #include "opcode.hpp"
@@ -6,12 +7,18 @@
 
 namespace dat
 {
-	inline std::unordered_map<Opcode, s_Instruction> InstructionSet;
+	using InstructionSet_t = std::unordered_map<opcode, s_Instruction>;
+
+	inline InstructionSet_t InstructionSet;
+	inline InstructionSet_t PrefixedInstructionSet;
 
 	void initialize_instruction_set(const nlohmann::json& j);
 
-	inline s_Instruction get_instruction_from_byte(u8 instructionOpcode)
+	inline s_Instruction get_instruction_from_opcode(opcode instructionOpcode, bool isPrefixinstruction = false)
 	{
-		return InstructionSet.at(instructionOpcode);
+		if (isPrefixinstruction)
+			return PrefixedInstructionSet.at(instructionOpcode);
+		else
+			return InstructionSet.at(instructionOpcode);
 	}
 }

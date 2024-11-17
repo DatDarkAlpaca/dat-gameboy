@@ -22,14 +22,14 @@ namespace dat
 		sinks[1]->set_pattern("[%D | %T] [%n] [%l]: %v");
 
 		// Core Logger:
-		MainLogger = dat::MakeShared<spdlog::logger>(DAT_PROJECT_NAME, std::begin(sinks), std::end(sinks));
+		MainLogger = dat::make_shared<spdlog::logger>(DAT_PROJECT_NAME, std::begin(sinks), std::end(sinks));
 		spdlog::register_logger(MainLogger);
 
 		MainLogger->set_level(spdlog::level::trace);
 		MainLogger->flush_on(spdlog::level::trace);
 
 		// Info Logger:
-		InfoLogger = dat::MakeShared<spdlog::logger>("Info", sinks[0]);
+		InfoLogger = dat::make_shared<spdlog::logger>("Info", sinks[0]);
 		spdlog::register_logger(InfoLogger);
 
 		InfoLogger->set_level(spdlog::level::trace);

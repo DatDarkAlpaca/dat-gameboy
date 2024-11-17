@@ -3,5 +3,5 @@
 
 namespace dat
 {
-	using Opcode = u8;
+	using opcode = u8;
 }

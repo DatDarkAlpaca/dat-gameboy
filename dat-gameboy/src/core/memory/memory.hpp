@@ -10,7 +10,7 @@ namespace dat
 	using dat_unique = std::unique_ptr<T, Deleter>;
 
 	template<typename T, typename ... Args>
-	constexpr dat_unique<T> MakeUnique(Args&& ... args)
+	constexpr dat_unique<T> make_unique(Args&& ... args)
 	{
 		return std::make_unique<T>(std::forward<Args>(args)...);
 	}
@@ -19,7 +19,7 @@ namespace dat
 	using dat_shared = std::shared_ptr<T>;
 
 	template<typename T, typename ... Args>
-	constexpr dat_shared<T> MakeShared(Args&& ... args)
+	constexpr dat_shared<T> make_shared(Args&& ... args)
 	{
 		return std::make_unique<T>(std::forward<Args>(args)...);
 	}

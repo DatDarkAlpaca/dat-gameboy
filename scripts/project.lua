@@ -39,7 +39,4 @@ function create_project(project_name, project_kind)
 		
 		-- Vendor
 		setup_vendors()
-		
-		-- Resources:
-		setup_resources()
 end

@@ -160,16 +160,7 @@
     <ClInclude Include="src\gameboy\instruction\instruction_set.hpp">
       <Filter>gameboy\instruction</Filter>
     </ClInclude>
-    <ClInclude Include="src\gameboy\instruction\microcode.hpp">
-      <Filter>gameboy\instruction</Filter>
-    </ClInclude>
-    <ClInclude Include="src\gameboy\instruction\microcode_functions.hpp">
-      <Filter>gameboy\instruction</Filter>
-    </ClInclude>
     <ClInclude Include="src\gameboy\instruction\opcode.hpp">
-      <Filter>gameboy\instruction</Filter>
-    </ClInclude>
-    <ClInclude Include="src\gameboy\instruction\operand.hpp">
       <Filter>gameboy\instruction</Filter>
     </ClInclude>
     <ClInclude Include="src\gameboy\utils.hpp">
@@ -220,13 +211,16 @@
     <ClCompile Include="src\core\stb.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="src\gameboy\components\sharp_commands.cpp">
+      <Filter>gameboy\components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameboy\components\sharp_sm83.cpp">
+      <Filter>gameboy\components</Filter>
+    </ClCompile>
     <ClCompile Include="src\gameboy\gameboy.cpp">
       <Filter>gameboy</Filter>
     </ClCompile>
     <ClCompile Include="src\gameboy\instruction\instruction_set.cpp">
-      <Filter>gameboy\instruction</Filter>
-    </ClCompile>
-    <ClCompile Include="src\gameboy\instruction\microcode_functions.cpp">
       <Filter>gameboy\instruction</Filter>
     </ClCompile>
     <ClCompile Include="src\pch.cpp" />

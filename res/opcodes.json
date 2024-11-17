@@ -13,10 +13,7 @@
 				"N": "-",
 				"H": "-",
 				"C": "-"
-			},
-			"microcodes": [
-				"NOP"
-			]
+			}
 		},
 		"0x01": {
 			"mnemonic": "LD",
@@ -66,11 +63,7 @@
 				"N": "-",
 				"H": "-",
 				"C": "-"
-			},
-			"microcodes": [
-				"FETCH_VALUE",
-				"ASSIGN_AT"
-			]
+			}
 		},
 		"0x03": {
 			"mnemonic": "INC",
@@ -155,11 +148,7 @@
 				"N": "-",
 				"H": "-",
 				"C": "-"
-			},
-			"microcodes": [
-				"FETCH_VALUE",
-				"ASSIGN"
-			]
+			}
 		},
 		"0x07": {
 			"mnemonic": "RLCA",
@@ -247,11 +236,7 @@
 				"N": "-",
 				"H": "-",
 				"C": "-"
-			},
-			"microcodes": [
-				"FETCH_ADDRESS",
-				"ASSIGN"
-			]
+			}
 		},
 		"0x0B": {
 			"mnemonic": "DEC",
@@ -336,11 +321,7 @@
 				"N": "-",
 				"H": "-",
 				"C": "-"
-			},
-			"microcodes": [
-				"FETCH_VALUE",
-				"ASSIGN"
-			]
+			}
 		},
 		"0x0F": {
 			"mnemonic": "RRCA",
@@ -376,10 +357,7 @@
 				"N": "-",
 				"H": "-",
 				"C": "-"
-			},
-			"microcodes": [
-				"STOP"
-			]
+			}
 		},
 		"0x11": {
 			"mnemonic": "LD",
@@ -513,11 +491,7 @@
 				"N": "-",
 				"H": "-",
 				"C": "-"
-			},
-			"microcodes": [
-				"FETCH_VALUE",
-				"ASSIGN"
-			]
+			}
 		},
 		"0x17": {
 			"mnemonic": "RLA",
@@ -862,11 +836,7 @@
 				"N": "-",
 				"H": "-",
 				"C": "-"
-			},
-			"microcodes": [
-				"FETCH_VALUE",
-				"ASSIGN"
-			]
+			}
 		},
 		"0x27": {
 			"mnemonic": "DAA",
@@ -1392,11 +1362,7 @@
 				"N": "-",
 				"H": "-",
 				"C": "-"
-			},
-			"microcodes": [
-				"FETCH_VALUE",
-				"ASSIGN"
-			]
+			}
 		},
 		"0x3F": {
 			"mnemonic": "CCF",
@@ -1435,10 +1401,7 @@
 				"N": "-",
 				"H": "-",
 				"C": "-"
-			},
-			"microcodes": [
-				"ASSIGN_FROM_REGISTER"
-			]
+			}
 		},
 		"0x41": {
 			"mnemonic": "LD",
@@ -1606,10 +1569,7 @@
 				"N": "-",
 				"H": "-",
 				"C": "-"
-			},
-			"microcodes": [
-				"ASSIGN_FROM_REGISTER"
-			]
+			}
 		},
 		"0x48": {
 			"mnemonic": "LD",

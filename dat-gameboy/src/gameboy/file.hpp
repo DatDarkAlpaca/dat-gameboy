@@ -16,7 +16,7 @@ namespace dat
 		file.read((char*)rom, ROMSize);
 	}
 
-	inline nlohmann::json load_opcodes_json(const std::filesystem::path& filepath)
+	inline nlohmann::json load_json_file(const std::filesystem::path& filepath)
 	{
 		std::ifstream file(filepath);
 		nlohmann::json jsonObject;

@@ -13,6 +13,9 @@ namespace dat
 		}
 
 	public:
+		u8& operator[] (u16 address) const { return memory[address]; }
+
+	public:
 		u8* rom() const { return memory; }
 
 	public:
