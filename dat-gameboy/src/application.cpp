@@ -60,6 +60,22 @@ namespace dat
 	{
 		Subscriber subscriber(event);
 
+		subscriber.subscribe<KeyPressedEvent>([&](const KeyPressedEvent& event) -> bool {
+			
+			if (event.key == Key::KEY_UP)
+				gameboy->memory.joypad().set_value(e_Button::UP, true);
+
+			return false;
+		});
+
+		subscriber.subscribe<KeyReleasedEvent>([&](const KeyReleasedEvent& event) -> bool {
+
+			if (event.key == Key::KEY_UP)
+				gameboy->memory.joypad().set_value(e_Button::UP, false);
+
+			return false;
+		});
+
 		subscriber.subscribe<WindowCloseEvent>([&](const WindowCloseEvent& event) -> bool {
 			m_IsOpen = false;
 			return false;

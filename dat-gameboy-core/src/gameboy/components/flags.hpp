@@ -42,6 +42,13 @@ namespace dat
 		}
 
 	public:
+		u8 get_value() const
+		{
+			return enableLCD >> 7 + windowTilemapArea >> 7 + enableWindow >> 6 + backgroundWindowTileMapArea >> 4 +
+				backgroundMapArea >> 3 + objSize >> 2 + enableObj >> 1 + enablebackgroundWindow;
+		}
+
+	public:
 		u8 enableLCD : 1;							/* 7 */
 		u8 windowTilemapArea : 1;					/* 6 */
 		u8 enableWindow : 1;						/* 5 */

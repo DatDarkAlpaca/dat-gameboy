@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdlib>
 #include "flags.hpp"
+#include "joypad.hpp"
+
 #include "common.hpp"
 
 namespace dat
@@ -15,6 +17,11 @@ namespace dat
 
 	public:
 		u8& operator[] (u16 address) const { return memory[address]; }
+
+	public:
+		s_Joypad joypad() const { return s_Joypad { memory[0xFF00] }; }
+
+		void set_joypad_input(bool value) const { }
 
 	public:
 		s_LCDC lcdc() const { return s_LCDC{ memory[0xFF40] }; }

@@ -245,6 +245,7 @@
     <ClInclude Include="src\utils\string.hpp">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\gameboy\components\joypad.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\assets\texture_library.cpp">

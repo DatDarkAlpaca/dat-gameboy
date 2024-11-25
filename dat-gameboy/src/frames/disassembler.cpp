@@ -119,6 +119,7 @@ namespace dat
 	void s_Disassembler::render_registers()
 	{
 		auto& cpu = r_Gameboy->cpu;
+		auto& mem = r_Gameboy->memory;
 
 		if (ImGui::BeginTable("RegisterTable", 2))
 		{
@@ -130,7 +131,7 @@ namespace dat
 				ImGui::Text("AF: %01x%01x", cpu.A, cpu.F);
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("LCDC: IMPLEMENT");
+				ImGui::Text("LCDC: %01x", mem.lcdc().get_value());
 			}
 
 			ImGui::TableNextRow();
