@@ -11,7 +11,7 @@ workspace "dat-gameboy"
         "Release"
     }
 
-    startproject "dat-gameboy-testbed"
+    startproject "dat-gameboy"
 
     flags {
 		"MultiProcessorCompile"
@@ -24,6 +24,7 @@ vendor_path         = "%{wks.location}/vendor/"
 resources_path      = "%{wks.location}/res/"
 
 group "dependencies"
+	include "vendor/tinyfiledialogs.lua"
 	include "vendor/glfw.lua"
     include "vendor/glad.lua"
     include "vendor/imgui.lua"
@@ -32,6 +33,6 @@ group "dependencies"
     include "vendor/googletest.lua"
 group ""
 
-include "dat-gameboy/build.lua"
+include "dat-gameboy-core/build.lua"
 include "dat-gameboy-test/build.lua"
-include "dat-gameboy-testbed/build.lua"
+include "dat-gameboy/build.lua"

@@ -7,4 +7,5 @@ end
 
 function prepare_test()
 	postbuildcommands "{COPYDIR} %{test_folder_path} %{resources_path}/v2/"
+	postbuildcommands "{COPYDIR} %{wks.location}/roms %{resources_path}/roms/"
 end
