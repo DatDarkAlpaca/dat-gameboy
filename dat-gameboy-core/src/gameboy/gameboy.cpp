@@ -15,39 +15,14 @@ namespace dat
 		ppu.initialize(&memory);
 	}
 
-	void s_Gameboy::run(u8 cycles)
+	void s_Gameboy::load_bootloader_rom(const std::vector<u8>& data) const
 	{
-		constexpr static u8 tCyclesPerMcycle = 4;
-		u8 currentMCycle = 0;
-
-		while (true)
-		{
-			if (cycles == currentMCycle)
-				break;
-
-			clock.start();
-			
-			if (clock.duration >= SM83Period_ns * tCyclesPerMcycle)
-			{
-				clock.restart();
-
-				cpu.tick();
-				ppu.tick();
-				
-				++currentMCycle;
-			}
-
-			clock.cycle();
-		}
+		std::memcpy(memory.get_memory(), data.data(), data.size());
 	}
 
-	void s_Gameboy::load_bootloader_rom(const std::vector<u8>& data)
+	void s_Gameboy::load_cartridge(const dat_shared<ICartridge>& cartridge)
 	{
-		std::memcpy(memory.memory, data.data(), data.size());
-	}
-
-	void s_Gameboy::load_cartridge(const s_Cartridge& cartridge)
-	{
-		std::memcpy(memory.memory, cartridge.buffer.data, KB(64) * sizeof(u8));
+		cpu.restart();
+		memory.set_cartridge(cartridge);
 	}
 }

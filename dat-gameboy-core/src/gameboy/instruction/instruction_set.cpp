@@ -3,7 +3,7 @@
 #include "utils/string.hpp"
 
 #include "instruction_set.hpp"
-#include "gameboy/components/registers.hpp"
+#include "gameboy/components/cpu/registers.hpp"
 
 namespace dat
 {

@@ -139,7 +139,7 @@
     <ClInclude Include="src\core\memory\memory.hpp">
       <Filter>core\memory</Filter>
     </ClInclude>
-    <ClInclude Include="src\gameboy\components\cartridge.hpp">
+    <ClInclude Include="src\gameboy\components\cartridge\cartridge.hpp">
       <Filter>gameboy\components</Filter>
     </ClInclude>
     <ClInclude Include="src\gameboy\components\clock.hpp">
@@ -148,7 +148,7 @@
     <ClInclude Include="src\gameboy\components\components.hpp">
       <Filter>gameboy\components</Filter>
     </ClInclude>
-    <ClInclude Include="src\gameboy\components\flags.hpp">
+    <ClInclude Include="src\gameboy\components\cpu\flags.hpp">
       <Filter>gameboy\components</Filter>
     </ClInclude>
     <ClInclude Include="src\gameboy\components\memory.hpp">
@@ -157,10 +157,10 @@
     <ClInclude Include="src\gameboy\components\ppu.hpp">
       <Filter>gameboy\components</Filter>
     </ClInclude>
-    <ClInclude Include="src\gameboy\components\registers.hpp">
+    <ClInclude Include="src\gameboy\components\cpu\registers.hpp">
       <Filter>gameboy\components</Filter>
     </ClInclude>
-    <ClInclude Include="src\gameboy\components\sharp_sm83.hpp">
+    <ClInclude Include="src\gameboy\components\cpu\sharp_sm83.hpp">
       <Filter>gameboy\components</Filter>
     </ClInclude>
     <ClInclude Include="src\gameboy\constants.hpp">
@@ -246,6 +246,9 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="src\gameboy\components\joypad.hpp" />
+    <ClInclude Include="src\gameboy\components\cartridge\cartridge_header.hpp" />
+    <ClInclude Include="src\gameboy\flags\video_mode.hpp" />
+    <ClInclude Include="src\gameboy\components\cpu\interrupt_sources.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\assets\texture_library.cpp">
@@ -257,10 +260,10 @@
     <ClCompile Include="src\core\stb.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="src\gameboy\components\sharp_commands.cpp">
+    <ClCompile Include="src\gameboy\components\cpu\sharp_commands.cpp">
       <Filter>gameboy\components</Filter>
     </ClCompile>
-    <ClCompile Include="src\gameboy\components\sharp_sm83.cpp">
+    <ClCompile Include="src\gameboy\components\cpu\sharp_sm83.cpp">
       <Filter>gameboy\components</Filter>
     </ClCompile>
     <ClCompile Include="src\gameboy\gameboy.cpp">
@@ -276,5 +279,7 @@
     <ClCompile Include="src\platform\glfw\window\window_glfw.cpp">
       <Filter>platform\glfw\window</Filter>
     </ClCompile>
+    <ClCompile Include="src\gameboy\components\cartridge\cartridge.cpp" />
+    <ClCompile Include="src\gameboy\components\memory.cpp" />
   </ItemGroup>
 </Project>

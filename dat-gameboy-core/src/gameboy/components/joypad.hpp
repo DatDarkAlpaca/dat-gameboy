@@ -30,6 +30,9 @@ namespace dat
 
 		else if (button == e_Button::START || button == e_Button::DOWN)
 			return 3;
+
+		DAT_LOG_ERROR("Invalid button passed to get_button_bit_position(): {}", static_cast<int>(button));
+		return 0xFF;
 	}
 
 	// P1/JOYP

@@ -12,6 +12,17 @@ namespace dat
 			m_StartTime = std::chrono::high_resolution_clock::now();
 		}
 
+		void end()
+		{
+			m_EndTime = std::chrono::high_resolution_clock::now();
+		}
+
+		long long delta() const
+		{
+			using namespace std::chrono;
+			return abs(duration_cast<nanoseconds>(m_EndTime - m_StartTime).count()) + 1;
+		}
+
 		void cycle()
 		{
 			using namespace std::chrono;

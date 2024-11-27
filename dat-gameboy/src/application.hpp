@@ -52,6 +52,7 @@ namespace dat
 		asset_handle invalidCartridgeTextureHandle;
 
 	private:
+		s_Clock m_Clock;
 		bool m_IsOpen = true;
 	};
 }

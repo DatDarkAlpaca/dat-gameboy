@@ -42,14 +42,12 @@ namespace dat
 
 	void s_DatApplication::run()
 	{
+		// TODO: timing
 		while (window.is_open() && m_IsOpen)
 		{
 			window.poll_events();
-
 			on_update();
-
 			on_render();
-
 			present(window);
 		}
 
@@ -61,7 +59,6 @@ namespace dat
 		Subscriber subscriber(event);
 
 		subscriber.subscribe<KeyPressedEvent>([&](const KeyPressedEvent& event) -> bool {
-			
 			if (event.key == Key::KEY_UP)
 				gameboy->memory.joypad().set_value(e_Button::UP, true);
 
@@ -92,13 +89,14 @@ namespace dat
 		subscriber.subscribe<CartridgeFocusEvent>([&](const CartridgeFocusEvent& event) -> bool {
 			auto cartridge = cartridgeHolder->get_cartridge(event.handle);
 			cartridgeAnalyzer->set_cartridge(cartridge);
+
 			return false;
 		});
 
 		// Gameboy:
 		subscriber.subscribe<InsertCartridgeEvent>([&](const InsertCartridgeEvent& event) -> bool {
 			auto cartridge = cartridgeHolder->get_cartridge(event.handle);
-			gameboy->load_cartridge(*cartridge);
+			gameboy->load_cartridge(cartridge);
 
 			return false;
 		});
@@ -110,7 +108,12 @@ namespace dat
 
 	void s_DatApplication::on_update()
 	{
-		gameboy->run(1);
+		for (u32 i = 0; i < 8000; ++i)
+			gameboy->cpu.tick();
+
+		gameboy->ppu.tick(CyclesPerFrame);
+
+		gameboyFrame->update(gameboy->ppu.get_framebuffer());
 	}
 
 	void s_DatApplication::on_render()
@@ -159,6 +162,11 @@ namespace dat
 		disassembler = dat::make_shared<s_Disassembler>();
 		gameboyFrame = dat::make_shared<s_GameboyFrame>(*gameboy);
 		cartridgeFrames = dat::make_shared<s_CartridgeFrameHolder>();
+		
+		// Cartridge Analyzer:
+		{
+			cartridgeAnalyzer->set_cartridge_holder(cartridgeHolder.get());
+		}
 
 		// Memory Viewer:
 		{
@@ -186,7 +194,7 @@ namespace dat
 		// Cartridge Frames:
 		{
 			cartridgeFrames->set_event_callback(BIND(&s_DatApplication::on_event, this));
-			cartridgeFrames->initialize(&textureLibrary, cartridgeTextureHandle, invalidCartridgeTextureHandle);
+			cartridgeFrames->initialize(cartridgeHolder.get(), &textureLibrary, cartridgeTextureHandle, invalidCartridgeTextureHandle);
 		}
 
 		// Menu Bar:

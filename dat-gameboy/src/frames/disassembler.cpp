@@ -100,7 +100,7 @@ namespace dat
 
 			u8 value;
 			if (r_Gameboy)
-				value = r_Gameboy->memory[static_cast<u16>(i)];
+				value = r_Gameboy->memory.read(static_cast<u16>(i));
 
 			ImGui::TableSetColumnIndex(1);
 			if (r_Gameboy)
@@ -142,7 +142,7 @@ namespace dat
 				ImGui::Text("BC: %01x%01x", cpu.BC.get_msb(), cpu.BC.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("STAT: IMPLEMENT");
+				ImGui::Text("STAT: %01x", mem.STAT().get_value());
 			}
 
 			ImGui::TableNextRow();
@@ -153,7 +153,7 @@ namespace dat
 				ImGui::Text("BC: %01x%01x", cpu.DE.get_msb(), cpu.DE.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("LY: IMPLEMENT");
+				ImGui::Text("LY: %01x", mem.LY());
 			}
 
 			ImGui::TableNextRow();
@@ -175,7 +175,7 @@ namespace dat
 				ImGui::Text("SP: %01x%01x", cpu.SP.get_msb(), cpu.SP.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("IE: IMPLEMENT");
+				ImGui::Text("IE: %01x", mem.interrupt_enable().get_value());
 			}
 
 			ImGui::TableNextRow();
@@ -186,7 +186,7 @@ namespace dat
 				ImGui::Text("PC: %01x%01x", cpu.PC.get_msb(), cpu.PC.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("IF: IMPLEMENT");
+				ImGui::Text("IF: %01x", mem.interrupt_flag().get_value());
 			}
 
 			ImGui::TableNextRow();
@@ -194,7 +194,7 @@ namespace dat
 			// IME | SPD
 			{
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("IME: IMPLEMENT");
+				ImGui::Text("IME: %01x", cpu.get_IME());
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("SPD: IMPLEMENT");
@@ -208,7 +208,7 @@ namespace dat
 				ImGui::Text("IMA: IMPLEMENT");
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("ROm: IMPLEMENT");
+				ImGui::Text("ROM: IMPLEMENT");
 			}
 
 			ImGui::EndTable();

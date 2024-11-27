@@ -26,7 +26,7 @@ namespace dat
 	{
 		char const* selectedFilepath = tinyfd_openFileDialog(
 			title.c_str(), nullptr,
-			filters.size(), filters.data(),
+			static_cast<int>(filters.size()), filters.data(),
 			description.c_str(), 0
 		);
 

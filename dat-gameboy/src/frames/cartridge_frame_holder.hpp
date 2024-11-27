@@ -4,10 +4,12 @@
 
 namespace dat
 {
+	class s_CartridgeHolder;
+
 	class s_CartridgeFrameHolder : public IFrame
 	{
 	public:
-		void initialize(s_TextureLibrary* textureLibrary, asset_handle textureHandle, asset_handle invalidCartridgeTextureHandle);
+		void initialize(s_CartridgeHolder* holder, s_TextureLibrary* textureLibrary, asset_handle textureHandle, asset_handle invalidCartridgeTextureHandle);
 
 	public:
 		void on_event(Event& event);
@@ -17,7 +19,7 @@ namespace dat
 	private:
 		void initialize_textures();
 
-		void create_cartridge_frame(const s_Cartridge& cartridge, cartridge_handle handle);
+		void create_cartridge_frame(const dat_shared<ICartridge>& cartridge, cartridge_handle handle);
 		
 		void remove_cartridge_frame(cartridge_handle handle);
 
@@ -34,5 +36,8 @@ namespace dat
 
 		gl_handle m_Texture;
 		gl_handle m_InvalidTexture;
+
+	private:
+		NON_OWNING s_CartridgeHolder* r_Holder = nullptr;
 	};
 }

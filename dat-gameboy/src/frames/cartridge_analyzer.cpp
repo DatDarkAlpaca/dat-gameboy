@@ -1,6 +1,7 @@
 #include "pch.hpp"
 #include "cartridge_analyzer.hpp"
 #include "events/frame_events.hpp"
+#include "core/cartridge_holder.hpp"
 
 namespace dat
 {
@@ -9,7 +10,8 @@ namespace dat
 		Subscriber subscriber(event);
 
 		subscriber.subscribe<PropagateLoadROMFileEvent>([&](const PropagateLoadROMFileEvent& event) -> bool {
-			set_cartridge(event.cartridge);
+			auto cartridge = r_Holder->get_cartridge(event.handle);
+			set_cartridge(cartridge);
 			return false;
 		});
 	}
@@ -46,11 +48,11 @@ namespace dat
 
 		// Type | RAM | ROM:
 		{
-			ImGui::Text("Cartridge Type: %s", get_cartridge_type(header));
+			ImGui::Text("Cartridge Type: %s", get_cartridge_type_name(header));
 			ImGui::Text("Destination: %s", (header.destinationCode == 0x00) ? "Japan" : "Other");
 
-			ImGui::Text("ROM Size: %ix KiB", get_rom_size_kib(header));
-			ImGui::Text("RAM Size: %ix KiB", get_ram_size_kib(header));
+			ImGui::Text("ROM Size: %ix KiB", get_rom_size(header) / KB(1));
+			ImGui::Text("RAM Size: %ix KiB", get_ram_size(header) / KB(1));
 
 			ImGui::Separator();
 		}
@@ -70,9 +72,14 @@ namespace dat
 		ImGui::End();
 	}
 
-	void s_CartridgeAnalyzer::set_cartridge(const dat_shared<s_Cartridge>& cartridge)
+	void s_CartridgeAnalyzer::set_cartridge(const dat_shared<ICartridge>& cartridge)
 	{
 		m_Cartridge = cartridge;
+	}
+
+	void s_CartridgeAnalyzer::set_cartridge_holder(s_CartridgeHolder* holder)
+	{
+		r_Holder = holder;
 	}
 
 	void s_CartridgeAnalyzer::render_empty()

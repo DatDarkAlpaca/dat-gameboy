@@ -13,6 +13,11 @@ namespace dat
 		return static_cast<u8>(value >> 8);
 	}
 
+	inline u8 bit_value(u8 value, u8 bitPosition)
+	{
+		return value & (1 << bitPosition);
+	}
+
 	inline bool check_bit(u8 value, u8 bitPosition)
 	{
 		return value & (1 << bitPosition);

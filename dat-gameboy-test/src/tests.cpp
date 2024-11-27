@@ -82,6 +82,8 @@ GameboyTest::GameboyTest()
 
 	auto opcodes = dat::load_json_file("res/opcodes.json");
 	dat::initialize_instruction_set(opcodes);
+
+	gameboy.load_cartridge(dat::make_shared<s_TestMBC>());
 }
 
 void GameboyTest::run_test(const std::filesystem::path& filepath)
@@ -100,10 +102,10 @@ void GameboyTest::run_test(const std::filesystem::path& filepath)
 
 		// Prefetch:
 		--gameboy.cpu.PC;
-		gameboy.run(1);
+		gameboy.cpu.tick();
 
 		for (const auto& [address, _, type] : testEntry.cycles)
-			gameboy.run();
+			gameboy.cpu.tick();
 
 		compare_cpu_data(testEntry.finalCondition);
 		++index;
@@ -128,7 +130,7 @@ void GameboyTest::prepare_cpu_data(const s_TestConditions::s_Conditions& conditi
 	gameboy.cpu.SP.set(conditions.sp);
 
 	for (const auto& entry : conditions.ram)
-		gameboy.memory[entry.address] = entry.value;
+		gameboy.memory.write(entry.address, entry.value);
 }
 
 void GameboyTest::compare_cpu_data(const s_TestConditions::s_Conditions& conditions)
@@ -151,7 +153,7 @@ void GameboyTest::compare_cpu_data(const s_TestConditions::s_Conditions& conditi
 	EXPECT_EQ(cpu.PC.get(), conditions.pc);
 
 	for (const auto& [address, value] : conditions.ram)
-		EXPECT_EQ(gameboy.memory[address], value);
+		EXPECT_EQ(gameboy.memory.read(address), value);
 }
 
 TEST_P(GameboyTest, RunTest_File)

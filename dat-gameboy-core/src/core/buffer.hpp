@@ -105,9 +105,14 @@ namespace dat
 		}
 
 	public:
+		inline u8 operator[](u16 address) const { return data[address]; }
+
+		inline u8& operator[](u16 address) { return data[address]; }
+
+	public:
 		std::function<void(u8*)> deleter = default_deleter;
-		std::function<u8*(u32)> allocator = default_allocator;
+		std::function<u8*(u64)> allocator = default_allocator;
 		u8* data = nullptr;
-		u32 size = 0;
+		u64 size = 0;
 	};
 }

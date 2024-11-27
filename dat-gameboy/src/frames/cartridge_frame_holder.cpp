@@ -1,10 +1,12 @@
 #include "pch.hpp"
 #include "cartridge_frame_holder.hpp"
+#include "core/cartridge_holder.hpp"
 
 namespace dat
 {
-	void s_CartridgeFrameHolder::initialize(s_TextureLibrary* textureLibrary, asset_handle textureHandle, asset_handle invalidCartridgeTextureHandle)
+	void s_CartridgeFrameHolder::initialize(s_CartridgeHolder* holder, s_TextureLibrary* textureLibrary, asset_handle textureHandle, asset_handle invalidCartridgeTextureHandle)
 	{
+		r_Holder = holder;
 		m_TextureLibrary = textureLibrary;
 		m_TextureHandle = textureHandle;
 		m_InvalidCartridgeTextureHandle = invalidCartridgeTextureHandle;
@@ -17,7 +19,8 @@ namespace dat
 		Subscriber subscriber(event);
 
 		subscriber.subscribe<PropagateLoadROMFileEvent>([&](const PropagateLoadROMFileEvent& event) -> bool {
-			create_cartridge_frame(*event.cartridge, event.handle);
+			auto cartridge = r_Holder->get_cartridge(event.handle);
+			create_cartridge_frame(cartridge, event.handle);
 			return false;
 		});
 
@@ -69,9 +72,9 @@ namespace dat
 		m_InvalidTexture = create_texture(descriptor, textureData->buffer.data);
 	}
 
-	void s_CartridgeFrameHolder::create_cartridge_frame(const s_Cartridge& cartridge, cartridge_handle handle)
+	void s_CartridgeFrameHolder::create_cartridge_frame(const dat_shared<ICartridge>& cartridge, cartridge_handle handle)
 	{
-		std::string cartridgeName = cartridge.filepath.filename().string();
+		std::string cartridgeName = cartridge->filepath.filename().string();
 		m_Frames[handle] = dat::make_unique<s_CartridgeFrame>(cartridgeName, handle);
 
 		auto& frame = m_Frames[m_Frames.size() - 1];
@@ -79,7 +82,7 @@ namespace dat
 		frame->set_event_callback(callback);
 
 		// Invalid Cartridge Texture:
-		if (!is_cartridge_logo_valid(cartridge.header))
+		if (!is_cartridge_logo_valid(cartridge->header))
 			frame->set_texture(m_InvalidTexture);
 	}
 

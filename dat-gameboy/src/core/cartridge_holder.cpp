@@ -3,7 +3,7 @@
 
 namespace dat
 {
-	cartridge_handle dat::s_CartridgeHolder::insert_cartridge(const s_Cartridge& cartridge)
+	cartridge_handle dat::s_CartridgeHolder::insert_cartridge(const dat_shared<ICartridge>& cartridge)
 	{
 		if (is_already_loaded(cartridge))
 		{
@@ -13,13 +13,13 @@ namespace dat
 
 		if (m_FreeList.empty())
 		{
-			m_Cartridges.push_back(dat::make_shared<s_Cartridge>(cartridge));
+			m_Cartridges.push_back(std::move(cartridge));
 			return static_cast<cartridge_handle>(m_Cartridges.size() - 1);
 		}
 
 		cartridge_handle handle = m_FreeList.back();
 		m_FreeList.pop_back();
-		m_Cartridges[handle] = dat::make_shared<s_Cartridge>(cartridge);
+		m_Cartridges[handle] = std::move(cartridge);
 
 		return handle;
 	}
@@ -30,7 +30,7 @@ namespace dat
 		m_FreeList.push_back(handle);
 	}
 
-	dat_shared<s_Cartridge> s_CartridgeHolder::get_cartridge(cartridge_handle handle) const
+	dat_shared<ICartridge> s_CartridgeHolder::get_cartridge(cartridge_handle handle) const
 	{
 		return m_Cartridges[handle];
 	}
@@ -44,13 +44,13 @@ namespace dat
 	{
 		Subscriber subscriber(event);
 
-		subscriber.subscribe<LoadROMFileEvent>([&](const LoadROMFileEvent& romEvent) -> bool {
+		subscriber.subscribe<LoadROMFileEvent>([&](LoadROMFileEvent& romEvent) -> bool {
 			cartridge_handle handle = insert_cartridge(romEvent.cartridge);
 
 			if (handle == invalid_handle)
 				return true;
 
-			PropagateLoadROMFileEvent propagateEvent(m_Cartridges[handle], handle);
+			PropagateLoadROMFileEvent propagateEvent(handle);
 			m_EventCallback(propagateEvent);
 
 			return true;
@@ -62,14 +62,14 @@ namespace dat
 		});
 	}
 
-	bool s_CartridgeHolder::is_already_loaded(const s_Cartridge& cartridge)
+	bool s_CartridgeHolder::is_already_loaded(const dat_shared<ICartridge>& cartridge)
 	{
 		for (const auto& loadedCartridge : m_Cartridges)
 		{
 			if (!loadedCartridge)
 				continue;
 
-			if (cartridge.filepath == loadedCartridge->filepath)
+			if (cartridge->filepath == loadedCartridge->filepath)
 				return true;
 		}
 

@@ -10,17 +10,13 @@ namespace dat
 		s_Gameboy();
 
 	public:
-		void run(u8 cycles = 1);
+		void load_bootloader_rom(const std::vector<u8>& data) const;
+
+		void load_cartridge(const dat_shared<ICartridge>& cartridge);
 
 	public:
-		void load_bootloader_rom(const std::vector<u8>& data);
-
-		void load_cartridge(const s_Cartridge& cartridge);
-
-	public:
-		s_PPU ppu;
 		s_SharpSM83 cpu;
-		s_Memory memory;
-		s_Clock clock;
+		s_MMU memory;
+		s_PPU ppu;
 	};
 }

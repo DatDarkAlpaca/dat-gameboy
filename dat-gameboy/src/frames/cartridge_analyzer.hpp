@@ -1,10 +1,12 @@
 #pragma once
 #include "common.hpp"
 #include "frames/frame.hpp"
-#include "gameboy/components/cartridge.hpp"
+#include "gameboy/components/cartridge/cartridge.hpp"
 
 namespace dat
 {
+	class s_CartridgeHolder;
+
 	class s_CartridgeAnalyzer : public IFrame
 	{
 	public:
@@ -13,12 +15,15 @@ namespace dat
 		void render();
 
 	public:
-		void set_cartridge(const dat_shared<s_Cartridge>& cartridge);
+		void set_cartridge(const dat_shared<ICartridge>& cartridge);
+
+		void set_cartridge_holder(s_CartridgeHolder* holder);
 
 	private:
 		void render_empty();
 
 	private:
-		dat_weak<s_Cartridge> m_Cartridge;
+		NON_OWNING s_CartridgeHolder* r_Holder = nullptr;
+		dat_weak<ICartridge> m_Cartridge;
 	};
 }

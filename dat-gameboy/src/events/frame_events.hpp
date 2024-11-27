@@ -2,7 +2,7 @@
 #include "common.hpp"
 #include "core/event/events.hpp"
 #include "core/cartridge_handle.hpp"
-#include "gameboy/components/cartridge.hpp"
+#include "gameboy/components/cartridge/cartridge.hpp"
 
 namespace dat
 {
@@ -23,14 +23,14 @@ namespace dat
 		DEFINE_EVENT(static_cast<EventType>(LOAD_ROM_EVENT));
 
 	public:
-		LoadROMFileEvent(const s_Cartridge& cartridge)
+		LoadROMFileEvent(const dat_shared<ICartridge>& cartridge)
 			: cartridge(cartridge)
 		{
 
 		}
 
 	public:
-		s_Cartridge cartridge;
+		dat_shared<ICartridge> cartridge;
 	};
 
 	// Issued by the cartridge holder to pass the cartridge information to other frames.
@@ -39,15 +39,13 @@ namespace dat
 		DEFINE_EVENT(static_cast<EventType>(PROPAGATE_LOAD_ROM_EVENT));
 
 	public:
-		PropagateLoadROMFileEvent(const dat_shared<s_Cartridge>& cartridge, cartridge_handle handle)
-			: cartridge(cartridge)
-			, handle(handle)
+		PropagateLoadROMFileEvent(cartridge_handle handle)
+			: handle(handle)
 		{
 
 		}
 
 	public:
-		dat_shared<s_Cartridge> cartridge;
 		cartridge_handle handle;
 	};
 
