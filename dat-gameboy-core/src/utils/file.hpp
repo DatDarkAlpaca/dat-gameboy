@@ -30,6 +30,9 @@ namespace dat
 			description.c_str(), 0
 		);
 
+		if (!selectedFilepath)
+			return std::filesystem::path();
+
 		return std::filesystem::path(selectedFilepath);
 	}
 }

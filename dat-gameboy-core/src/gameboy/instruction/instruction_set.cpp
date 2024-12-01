@@ -80,7 +80,7 @@ namespace dat
 			u8 tStates = get_t_states_true(value);
 			u8 tStatesFalse = get_t_states_false(value);
 
-			// CB instructions act like 2-byte opcodes. The table includes the prefix t-state onto the opcodes.
+			// CB instructions act like 2-byte opcodes. The table accounts for this fact already.
 			if (isCB)
 				tStates -= 4;
 

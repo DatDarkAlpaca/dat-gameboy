@@ -7,6 +7,27 @@ namespace dat
 	dat::s_MMU::s_MMU()
 	{
 		memory = (u8*)calloc(KB(64), sizeof(u8));
+		if (!memory)
+			DAT_LOG_CRITICAL("Failed to allocate gameboy memory");
+
+		m_Joypad.initialize(&memory[JOYP_Address]);			// 0xFF00
+		m_InterruptFlag.initialize(&memory[IF_Address]);	// 0xFF0F
+
+		m_LCDC.initialize(&memory[LCDC_Address]);			// 0xFF40
+		m_STAT.initialize(&memory[STAT_Address]);			// 0xFF41
+		m_SCY.initialize(&memory[SCY_Address]);				// 0xFF42
+		m_SCX.initialize(&memory[SCX_Address]);				// 0xFF43
+		m_LY.initialize(&memory[LY_Address]);				// 0xFF44
+		m_LYC.initialize(&memory[LYC_Address]);				// 0xFF45
+
+		m_BGP.initialize(&memory[BGP_Address]);				// 0xFF47
+		m_OBP0.initialize(&memory[OBP0_Address]);			// 0xFF48
+		m_OBP1.initialize(&memory[OBP1_Address]);			// 0xFF49
+
+		m_WY.initialize(&memory[WY_Address]);				// 0xFF4A
+		m_WX.initialize(&memory[WX_Address]);				// 0xFF4B
+
+		m_InterruptEnable.initialize(&memory[IE_Address]);	// 0xFFFF
 	}
 
 	s_MMU::~s_MMU()
@@ -17,9 +38,6 @@ namespace dat
 	void s_MMU::set_cartridge(const dat_shared<ICartridge>& cartridge)
 	{
 		this->cartridge = cartridge;
-		std::memcpy(memory, cartridge->get_rom(), KB(16));
-
-		m_IsBootActive = false;
 	}
 
 	u8 s_MMU::read(u16 address) const
@@ -28,7 +46,7 @@ namespace dat
 		// [0x0000, 0x7FFF)
 		if (address >= 0x0000 && address <= 0x7FFF)
 		{
-			if (address >= 0x00 && address < 0xFF && m_IsBootActive)
+			if (address >= 0x00 && address < 0xFF && bootloader_enabled())
 				return memory[address];
 
 			if (cartridge)
@@ -48,6 +66,7 @@ namespace dat
 		{
 			if (cartridge)
 				return cartridge->read(address);
+			return 0xFF;
 		}
 
 		/* Work RAM */
@@ -58,11 +77,8 @@ namespace dat
 		/* Mirrored Work RAM */
 		// [0xE000, 0xFDFF]
 		else if (address >= 0xE000 && address <= 0xFDFF)
-		{
-			DAT_LOG_WARN("Read from mirrored work ram at: {}", address);
-			return memory[address];
-		}
-
+			return memory[address - 0x2000];
+	
 		/* OAM */
 		// [0xFE00, 0xFE9F]
 		else if (address >= 0xFE00 && address <= 0xFE9F)
@@ -72,7 +88,7 @@ namespace dat
 		// [FEA0, FEFF]
 		else if (address >= 0xFEA0 && address <= 0xFEFF)
 		{
-			DAT_LOG_WARN("Read from prohibited address: {}", address);
+			DAT_LOG_WARN("Invalid read at: {}", address);
 			return memory[address];
 		}
 
@@ -100,7 +116,11 @@ namespace dat
 		// [0x0000, 0x7FFF)
 		if (address >= 0x0000 && address <= 0x7FFF)
 		{
-			return cartridge->write(address, value);
+			if (cartridge)
+				return cartridge->write(address, value);
+
+			memory[address] = value;
+			return;
 		}
 
 		/* VRAM */
@@ -115,7 +135,11 @@ namespace dat
 		// [0xA000, 0xBFFF]
 		else if (address >= 0xA000 && address <= 0xBFFF)
 		{
-			return cartridge->write(address, value);
+			if (cartridge)
+				return cartridge->write(address, value);		
+
+			memory[address] = value;
+			return;
 		}
 
 		/* Work RAM */
@@ -130,8 +154,7 @@ namespace dat
 		// [0xE000, 0xFDFF]
 		else if (address >= 0xE000 && address <= 0xFDFF)
 		{
-			DAT_LOG_WARN("Write to mirrored work ram at address: {}", address);
-			memory[address] = value;
+			memory[address - 0x2000] = value;
 			return;
 		}
 
@@ -147,7 +170,6 @@ namespace dat
 		// [FEA0, FEFF]
 		else if (address >= 0xFEA0 && address <= 0xFEFF)
 		{
-			DAT_LOG_WARN("Write to prohibited address: {}", address);
 			memory[address] = value;
 			return;
 		}
@@ -156,10 +178,31 @@ namespace dat
 		// [0xFF00, 0xFF7F]
 		else if (address >= 0xFF00 && address <= 0xFF7F)
 		{
+			// LY
+			if (address == 0xFF44)
+				memory[address] = 0x0;
+
+			// DMA
+			if (address == 0xFF46)
+			{
+				u16 address = value * 0x100;
+
+				for (u8 i = 0x0; i <= 0x9F; ++i) 
+				{
+					u16 sourceAddr = value * 0x100 + i;
+					u16 targetAddr = 0xFE00 + i;
+
+					u8 dereferencedValue = read(sourceAddr);
+					write(targetAddr, dereferencedValue);
+				}
+
+				return;
+			}
+			
 			memory[address] = value;
 			return;
 		}
-
+		
 		/* HRAM */
 		// [0xFF80, 0xFFFE]
 		else if (address >= 0xFF80 && address <= 0xFFFE)

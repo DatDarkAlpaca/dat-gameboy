@@ -10,17 +10,17 @@
 
 namespace dat
 {
-	enum class e_Color
+	enum class e_Color : u8
 	{
-		WHITE,
-		LIGHT_GRAY,
-		DARK_GRAY,
-		BLACK
+		WHITE			= 0x0,
+		LIGHT_GRAY		= 0x1,
+		DARK_GRAY		= 0x2,
+		BLACK			= 0x3
 	};
 
-	inline e_Color get_pixel_from_line(u8 pixels0, u8 pixels1, u8 x)
+	inline u8 get_pixel_from_line(u8 pixels0, u8 pixels1, u8 x)
 	{
-		return static_cast<e_Color>((bit_value(pixels1, 7 - x) << 1) | bit_value(pixels0, 7 - x));
+		return (bit_value(pixels1, 7 - x) << 1) | bit_value(pixels0, 7 - x);
 	}
 
 	struct Palette
@@ -34,31 +34,24 @@ namespace dat
 	struct s_Tile
 	{
 	public:
-		s_Tile(u8 pixels0, u8 pixels1, u32 tileSize)
+		s_Tile(u8* tileAddress, u32 tileSize)
 			: m_TileSize(tileSize)
 		{
-			clear();
-
 			for (u16 y = 0; y < TilePixelSize * m_TileSize; ++y)
 			{
-				u16 index_into_tile = 2 * y;
-
 				for (u8 x = 0; x < 8; ++x)
 				{
+					auto pixelLine0 = *(tileAddress + 2 * y);
+					auto pixelLine1 = *(tileAddress + 2 * y + 1);
+
 					u32 pixelIndex = y * TilePixelSize + x;
-					m_TileData[pixelIndex] = get_pixel_from_line(pixels0, pixels1, x);
+					m_TileData[pixelIndex] = (e_Color)get_pixel_from_line(pixelLine0, pixelLine1, x);
 				}
 			}
 		}
 
 	public:
 		e_Color get_color(u8 x, u8 y) const { return m_TileData[y * TilePixelSize + x]; }
-
-	private:
-		void clear()
-		{
-			std::fill(m_TileData.begin(), m_TileData.end(), e_Color::WHITE);
-		}
 
 	private:
 		std::array<e_Color, 2 * TilePixelSize * TilePixelSize> m_TileData;
@@ -75,8 +68,6 @@ namespace dat
 
 		void tick(u32 cycles)
 		{
-			// TODO: check interrupts
-			// TODO: cpu. handle interrupts
 			m_Cycles += cycles;
 
 			switch (m_VideoMode)
@@ -91,17 +82,15 @@ namespace dat
 					write_line();
 					++r_Memory->LY();
 
-					if (r_Memory->LY() != 144)
+					if (r_Memory->LY() == 144)
 					{
-						switch_mode(e_VideoMode::ACCESS_OAM);
+						r_Memory->IF().set(e_IF::VBLANK, true);
+						switch_mode(e_VideoMode::VBLANK);
 						return;
 					}
 
-					switch_mode(e_VideoMode::VBLANK);
-					r_Memory->interrupt_enable().vblank = 1;
-					r_Memory->interrupt_enable().commit();
+					switch_mode(e_VideoMode::ACCESS_OAM);
 					return;
-
 				} break;
 
 				case e_VideoMode::ACCESS_OAM:
@@ -121,22 +110,15 @@ namespace dat
 
 					m_Cycles %= CyclesVRAM;
 
-					bool hblankInterrupt = r_Memory->STAT().mode0intSelect;
+					bool hblankInterrupt = r_Memory->STAT().is_bit_set(e_STAT::MODE_0_INT_SELECT);
 					if (hblankInterrupt)
-					{
-						r_Memory->interrupt_enable().lcd = 1;
-						r_Memory->interrupt_enable().commit();
-					}
+						r_Memory->IF().set(e_IF::LCD, true);
 					
-					if (r_Memory->STAT().LYC_EQ_LY && r_Memory->LYC() == r_Memory->LY())
-					{
-						r_Memory->interrupt_enable().lcd = 1;
-						r_Memory->interrupt_enable().commit();
-					}
+					bool lycEquivalent = r_Memory->LYC() == r_Memory->LY();
+					if (r_Memory->STAT().is_bit_set(e_STAT::LYC_EQ_LC) && lycEquivalent)
+						r_Memory->IF().set(e_IF::LCD, true);
 
-					r_Memory->STAT().LYC_EQ_LY = 1;
-					r_Memory->STAT().commit();
-
+					r_Memory->STAT().set(e_STAT::LYC_EQ_LC, lycEquivalent);
 					switch_mode(e_VideoMode::HBLANK);
 				} break;
 
@@ -145,29 +127,18 @@ namespace dat
 					if (m_Cycles < CyclesVBlank)
 						return;
 
-					m_Cycles %= VBLANK;
+					m_Cycles %= CyclesVBlank;
+					++r_Memory->LY();
 
-					auto& lineIndex = ++r_Memory->LY();
-					
-					if (lineIndex != 154)
+					if (r_Memory->LY() != 154)
 						return;
 
-					// render.
-
 					render_sprites();
+							
+					//std::fill(m_Framebuffer.begin(), m_Framebuffer.end(), e_Color::WHITE);
+					r_Memory->LY().write(0);
 
 					switch_mode(e_VideoMode::ACCESS_OAM);
-					
-					/*if (line == 154) 
-					{
-						write_sprites();
-						draw();
-						buffer.reset();
-						line.reset();
-						current_mode = VideoMode::ACCESS_OAM;
-						lcd_status.set_bit_to(1, true);
-						lcd_status.set_bit_to(0, false);
-					};*/
 				} break;
 			}
 		}
@@ -175,32 +146,32 @@ namespace dat
 	private:
 		void write_line()
 		{
-			if (!r_Memory->lcdc().enableLCD)
+			if (!r_Memory->lcdc().is_bit_set(e_LCDC::LCD_PPU_ENABLE))
 				return;
 
-			if (r_Memory->lcdc().enablebackgroundWindow)
+			if (r_Memory->lcdc().is_bit_set(e_LCDC::BG_WINDOW_ENABLE_PRIORITY))
 				render_background_line();
 
-			if (r_Memory->lcdc().enableWindow)
+			if (r_Memory->lcdc().is_bit_set(e_LCDC::WINDOW_ENABLE))
 				render_window_line();
 		}
 		
 		void render_background_line()
 		{
-			bool useTileSet0 = r_Memory->lcdc().backgroundWindowTileMapArea;
-			bool useTileMap0 = !r_Memory->lcdc().backgroundMapArea;
+			bool useTileSet0 = r_Memory->lcdc().is_bit_set(e_LCDC::BG_WINDOW_TILES);
+			bool useTileMap0 = !r_Memory->lcdc().is_bit_set(e_LCDC::BG_TILEMAP);
 
-			Palette palette = get_palette_colors(r_Memory->BGP().get_value());
+			Palette palette = get_palette_colors(r_Memory->BGP());
 
 			u8* tileSet = (useTileSet0) ? r_Memory->vram_block0() : r_Memory->vram_block1();
 			u8* tileMap = (useTileMap0) ? r_Memory->vram_tilemap0() : r_Memory->vram_tilemap1();
 
-			u32 screenY = r_Memory->LY();
+			u32 screenY = r_Memory->LY().get();
 
 			for (u8 screenX = 0; screenX < GameboyScreenWidth; ++screenX)
 			{
-				u8 scrolledX = screenX + r_Memory->SCX();
-				u8 scrolledY = screenY + r_Memory->SCY();
+				u8 scrolledX = screenX + r_Memory->SCX().get();
+				u8 scrolledY = screenY + r_Memory->SCY().get();
 
 				u8 backgroundMapX = scrolledX % BackgroundMapTileSize;
 				u8 backgroundMapY = scrolledY % BackgroundMapTileSize;
@@ -211,34 +182,34 @@ namespace dat
 				u8 tilePixelX = backgroundMapX % TilePixelSize;
 				u8 tilePixelY = backgroundMapY % TilePixelSize;
 
-				u8 tileID = *(tileMap + (tileY * TilesPerLine + tileX));
+				u8 tileID = *(tileMap + tileY * TilesPerLine + tileX);
 
-				// Addressing:
+				// Addressing mode:
 				u8 tileMemoryOffset = useTileSet0
 					? tileID * BytesPerTile
 					: (static_cast<i8>(tileID) + 128) * BytesPerTile;
 
-				u8 pixelLine0 = *(tileSet + tileMemoryOffset + 2 * tilePixelY);
-				u8 pixelLine1 = *(tileSet + tileMemoryOffset + 2 * tilePixelY + 1);
+				u8 pixelLine0 = *(tileSet + tileMemoryOffset + tilePixelY * 2);
+				u8 pixelLine1 = *(tileSet + tileMemoryOffset + tilePixelY * 2 + 1);
 
-				e_Color pixelColor = get_pixel_from_line(pixelLine0, pixelLine1, tilePixelX);
+				u8 pixelColor = get_pixel_from_line(pixelLine0, pixelLine1, tilePixelX);
 				e_Color screenColor = get_color_from_palette(pixelColor, palette);
 
-				m_Framebuffer[screenY + GameboyScreenWidth + screenX] = screenColor;
+				set_pixel(screenX, screenY, screenColor);
 			}
 		}
 
 		void render_window_line()
 		{
-			bool useTileSet0 = r_Memory->lcdc().backgroundWindowTileMapArea;
-			bool useTileMap0 = !r_Memory->lcdc().windowTilemapArea;
+			bool useTileSet0 = r_Memory->lcdc().is_bit_set(e_LCDC::BG_WINDOW_TILES);
+			bool useTileMap0 = !r_Memory->lcdc().is_bit_set(e_LCDC::WINDOW_TILEMAP);
 
-			Palette palette = get_palette_colors(r_Memory->BGP().get_value());
+			Palette palette = get_palette_colors(r_Memory->BGP());
 
 			u8* tileSet = (useTileSet0) ? r_Memory->vram_block0() : r_Memory->vram_block1();
 			u8* tileMap = (useTileMap0) ? r_Memory->vram_tilemap0() : r_Memory->vram_tilemap1();
 
-			u32 screenY = r_Memory->LY();
+			u32 screenY = r_Memory->LY().get();
 			u32 scrolledY = screenY - r_Memory->WY();
 
 			if (scrolledY >= GameboyScreenHeight)
@@ -264,16 +235,16 @@ namespace dat
 				u8 pixelLine0 = *(tileSet + tileMemoryOffset + 2 * tilePixelY);
 				u8 pixelLine1 = *(tileSet + tileMemoryOffset + 2 * tilePixelY + 1);
 
-				e_Color pixelColor = get_pixel_from_line(pixelLine0, pixelLine1, tilePixelX);
+				u8 pixelColor = get_pixel_from_line(pixelLine0, pixelLine1, tilePixelX);
 				e_Color screenColor = get_color_from_palette(pixelColor, palette);
 
-				m_Framebuffer[screenY + GameboyScreenWidth + screenX] = screenColor;
+				set_pixel(screenX, screenY, screenColor);
 			}
 		}
 
 		void render_sprites()
 		{
-			if (!r_Memory->lcdc().enableObj)
+			if (!r_Memory->lcdc().is_bit_set(e_LCDC::OBJ_ENABLE))
 				return;
 			
 			for (u32 index = 0; index < SpriteAttrAmountOAM; ++index)
@@ -285,7 +256,7 @@ namespace dat
 			const s_LCDC& lcdc = r_Memory->lcdc();
 
 			// Sprite Attributes:
-			u8* spriteAddress = r_Memory->oam() + index * BytesPerSprite;
+			u8* spriteAddress = r_Memory->oam(index * BytesPerSprite);
 			u8 spriteYPos					  = *(spriteAddress + 0);
 			u8 spriteXPos					  = *(spriteAddress + 1);
 			u8 tileIndex					  = *(spriteAddress + 2);
@@ -299,7 +270,7 @@ namespace dat
 			bool flipX     = attributes.xFlip;
 			bool flipY     = attributes.yFlip;
 			bool priority  = attributes.priority;
-			u32 spriteSize = lcdc.objSize ? 2 : 1;
+			u32 spriteSize = lcdc.is_bit_set(e_LCDC::OBJ_SIZE) ? 2 : 1;
 
 			// Palette:
 			Palette palette = (attributes.dmgPalette) ?
@@ -307,9 +278,8 @@ namespace dat
 				get_palette_colors(r_Memory->OBP0());
 
 			// Tile:
-			u8 pixel0 = *r_Memory->vram(tileIndex * BytesPerTile + 0);
-			u8 pixel1 = *r_Memory->vram(tileIndex * BytesPerTile + 1);
-			s_Tile spriteTile(pixel0, pixel1, spriteSize);
+			u8* tileAddress = r_Memory->vram(tileIndex * BytesPerTile);
+			s_Tile spriteTile(tileAddress, spriteSize);
 
 			u8 startY = spriteYPos - 16;
 			u8 startX = spriteXPos - 8;
@@ -330,14 +300,14 @@ namespace dat
 					int screenX = startX + x;
 					int screenY = startY + y;
 
-					if (x < GameboyScreenWidth && y < GameboyScreenHeight)
+					if (x > GameboyScreenWidth || y > GameboyScreenHeight)
 						continue;
 
 					auto currentPixel = m_Framebuffer[screenY * TilePixelSize + screenX];
 					if (priority && currentPixel != e_Color::WHITE)
 						continue;
 
-					e_Color color = get_color_from_palette(tileColor, palette);
+					e_Color color = get_color_from_palette((u8)tileColor, palette);
 					set_pixel(screenX, screenY, color);
 				}
 			}
@@ -347,50 +317,42 @@ namespace dat
 		void switch_mode(e_VideoMode mode)
 		{
 			m_VideoMode = mode;
-			r_Memory->STAT().set_ppu_mode(m_VideoMode);
+			r_Memory->STAT().set_video_mode(m_VideoMode);
 		}
 
-		Palette get_palette_colors(u8 registerValue)
+		Palette get_palette_colors(s_PaletteRegister registerValue)
 		{
-			u8 color0 = (check_bit(registerValue, 1) << 1) || check_bit(registerValue, 0);
-			u8 color1 = (check_bit(registerValue, 1) << 3) || check_bit(registerValue, 2);
-			u8 color2 = (check_bit(registerValue, 1) << 5) || check_bit(registerValue, 4);
-			u8 color3 = (check_bit(registerValue, 1) << 7) || check_bit(registerValue, 6);
-
-			auto get_palette_color = [](u8 colorCode) {
-				return static_cast<e_Color>(colorCode);
-			};
-
 			return {
-				get_palette_color(color0),
-				get_palette_color(color1),
-				get_palette_color(color2),
-				get_palette_color(color3),
+				static_cast<e_Color>(registerValue.get_color(e_BGPColor::COLOR0)),
+				static_cast<e_Color>(registerValue.get_color(e_BGPColor::COLOR1)),
+				static_cast<e_Color>(registerValue.get_color(e_BGPColor::COLOR2)),
+				static_cast<e_Color>(registerValue.get_color(e_BGPColor::COLOR3)),
 			};
 		}
 
-		e_Color get_color_from_palette(e_Color color, Palette palette)
+		e_Color get_color_from_palette(u8 color, Palette palette)
 		{
-			if (color == e_Color::WHITE)
+			const auto& paletteColor = static_cast<e_Color>(color);
+
+			if (paletteColor == e_Color::WHITE)
 				return palette.color0;
 
-			if (color == e_Color::LIGHT_GRAY)
+			if (paletteColor == e_Color::LIGHT_GRAY)
 				return palette.color1;
 
-			if (color == e_Color::DARK_GRAY)
+			if (paletteColor == e_Color::DARK_GRAY)
 				return palette.color2;
 
-			if (color == e_Color::BLACK)
+			if (paletteColor == e_Color::BLACK)
 				return palette.color3;
 
 			DAT_LOG_CRITICAL("Invalid color: {}", static_cast<u8>(color));
-			return e_Color::WHITE;
+			return e_Color::BLACK;
 		}
 
 		void set_pixel(u32 x, u32 y, e_Color color)
 		{
-			u32 index = y * GameboyScreenWidth + x;
-			m_Framebuffer[index] = color;
+			m_Framebuffer[y * GameboyScreenWidth + x] = color;
 		}
 
 	public:

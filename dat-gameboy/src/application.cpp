@@ -38,14 +38,18 @@ namespace dat
 		// UI:
 		dat::setup_ui(window);
 		initialize_ui();
+
+		inputHandler.initialize(&gameboy->memory);
 	}
 
 	void s_DatApplication::run()
-	{
-		// TODO: timing
+	{ 
+		double lasttime = glfwGetTime();
+
 		while (window.is_open() && m_IsOpen)
 		{
 			window.poll_events();
+
 			on_update();
 			on_render();
 			present(window);
@@ -58,20 +62,7 @@ namespace dat
 	{
 		Subscriber subscriber(event);
 
-		subscriber.subscribe<KeyPressedEvent>([&](const KeyPressedEvent& event) -> bool {
-			if (event.key == Key::KEY_UP)
-				gameboy->memory.joypad().set_value(e_Button::UP, true);
-
-			return false;
-		});
-
-		subscriber.subscribe<KeyReleasedEvent>([&](const KeyReleasedEvent& event) -> bool {
-
-			if (event.key == Key::KEY_UP)
-				gameboy->memory.joypad().set_value(e_Button::UP, false);
-
-			return false;
-		});
+		inputHandler.on_event(event);
 
 		subscriber.subscribe<WindowCloseEvent>([&](const WindowCloseEvent& event) -> bool {
 			m_IsOpen = false;
@@ -108,11 +99,13 @@ namespace dat
 
 	void s_DatApplication::on_update()
 	{
-		for (u32 i = 0; i < 8000; ++i)
+		auto x = 17592;
+		for (u32 i = 0; i < x; ++i) 
+		{
 			gameboy->cpu.tick();
-
-		gameboy->ppu.tick(CyclesPerFrame);
-
+			gameboy->ppu.tick(1);
+		}
+		
 		gameboyFrame->update(gameboy->ppu.get_framebuffer());
 	}
 

@@ -15,7 +15,7 @@ namespace dat
 
 	inline u8 bit_value(u8 value, u8 bitPosition)
 	{
-		return value & (1 << bitPosition);
+		return (value >> bitPosition) & 1;
 	}
 
 	inline bool check_bit(u8 value, u8 bitPosition)

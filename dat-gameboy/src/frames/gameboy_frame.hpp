@@ -5,62 +5,34 @@
 
 namespace dat
 {
-	struct s_ScreenFrame : public s_ImageFrame
-	{
-	public:
-		s_ScreenFrame()
-		{
-			TextureDescriptor descriptor;
-			descriptor.width = 160;
-			descriptor.height = 144;
-			descriptor.generateMipmaps = false;
-
-			texture = create_texture(descriptor, nullptr);
-			initialize(texture, 160, 144);
-		}
-
-	public:
-		void render() override
-		{
-			render_frame("GameboyScreen", false);
-			ImGui::SetWindowPos({ position.x, position.y }, ImGuiCond_None);
-			ImGui::End();
-		}
-
-	public:
-		glm::vec2 position = { 0,0 };
-		gl_handle texture = invalid_handle;
-	};
-
 	class s_GameboyFrame : public s_ImageFrame
 	{
 	public:
 		s_GameboyFrame(s_Gameboy& gameboy)
 			: gameboy(gameboy)
 		{
-			
+			TextureDescriptor descriptor;
+			descriptor.width = 160;
+			descriptor.height = 144;
+			descriptor.generateMipmaps = false;
+
+			m_ScreenTexture = create_texture(descriptor, nullptr);
 		}
 
 	public:
 		void render()
 		{
 			// Gameboy:
-			render_frame("Gameboy", true);
+			render_frame("Gameboy", false);
 			auto gameboyPosition = ImGui::GetWindowPos();
-			return;
-			// Size:
-			ImVec2 screenSize = ImGui::GetContentRegionAvail();
-			float scaledHeight = (160 / 144) * screenSize.x;
-
+			
+			ImGui::SetCursorScreenPos({ 
+				gameboyPosition.x, 
+				gameboyPosition.y 
+			});
+			ImGui::Image((ImTextureID)(intptr_t)m_ScreenTexture, { 160 * 2, 144 * 2});
+			
 			ImGui::End();
-			return;
-			// Screen:
-			m_ScreenFrame.position = {
-				gameboyPosition.x + 31,
-				gameboyPosition.y + 30
-			};
-
-			m_ScreenFrame.render();
 		}
 		
 		void update(const std::array<e_Color, 160 * 144>& data)
@@ -68,7 +40,7 @@ namespace dat
 			u8 rgbBuffer[160 * 144 * 3];
 			glm::vec3 colorWhite = { 255, 255, 255 };
 			glm::vec3 colorLight = { 155, 155, 155 };
-			glm::vec3 colorDark = { 040, 040, 040 };
+			glm::vec3 colorDark  = {  90,  90,  90 };
 			glm::vec3 colorBlack = { 000, 000, 000 };
 
 			size_t index = 0;
@@ -85,34 +57,34 @@ namespace dat
 
 					case e_Color::LIGHT_GRAY:
 					{
-						rgbBuffer[index * 3 + 0] = colorLight[0];
-						rgbBuffer[index * 3 + 1] = colorLight[1];
-						rgbBuffer[index * 3 + 2] = colorLight[2];
+						rgbBuffer[index * 3 + 0] = colorLight.r;
+						rgbBuffer[index * 3 + 1] = colorLight.g;
+						rgbBuffer[index * 3 + 2] = colorLight.b;
 					} break;
 
 					case e_Color::DARK_GRAY:
 					{
-						rgbBuffer[index * 3 + 0] = colorDark[0];
-						rgbBuffer[index * 3 + 1] = colorDark[1];
-						rgbBuffer[index * 3 + 2] = colorDark[2];
+						rgbBuffer[index * 3 + 0] = colorDark.r;
+						rgbBuffer[index * 3 + 1] = colorDark.g;
+						rgbBuffer[index * 3 + 2] = colorDark.b;
 					} break;
 
 					case e_Color::BLACK:
 					{
-						rgbBuffer[index * 3 + 0] = colorBlack[0];
-						rgbBuffer[index * 3 + 1] = colorBlack[1];
-						rgbBuffer[index * 3 + 2] = colorBlack[2];
+						rgbBuffer[index * 3 + 0] = colorBlack.r;
+						rgbBuffer[index * 3 + 1] = colorBlack.g;
+						rgbBuffer[index * 3 + 2] = colorBlack.b;
 					} break;
 				}
 
 				++index;
 			}
 
-			update_texture(m_ScreenFrame.texture, 160, 144, GL_RGB, GL_UNSIGNED_BYTE, rgbBuffer);
+			update_texture(m_ScreenTexture, 160, 144, GL_RGB, GL_UNSIGNED_BYTE, rgbBuffer);
 		}
 
 	private:
-		s_ScreenFrame m_ScreenFrame;
+		gl_handle m_ScreenTexture;
 		s_Gameboy& gameboy;
 	};
 }

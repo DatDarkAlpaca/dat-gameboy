@@ -39,6 +39,7 @@
     <ClInclude Include="src\frames\frames.hpp" />
     <ClInclude Include="src\core\cartridge_holder.hpp" />
     <ClInclude Include="src\core\cartridge_handle.hpp" />
+    <ClInclude Include="src\events\input_handler.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\application.cpp" />

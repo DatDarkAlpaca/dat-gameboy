@@ -30,7 +30,7 @@ namespace dat
 	private:
 		void execute_interrupts();
 
-		bool handle_interrupt(u8 interrupt, u16 source);
+		bool handle_interrupt(u8 interrupt, u16 source, u8 interruptsEnabled);
 
 		void execute_instruction();
 
@@ -51,7 +51,7 @@ namespace dat
 
 	public:
 		u8 A;
-		s_Flags F;
+		s_SM83Flags F;
 		s_WordRegister BC;
 		s_WordRegister DE;
 		s_WordRegister HL;
@@ -190,10 +190,7 @@ namespace dat
 		/* Load */
 		void load(u8& target, u8 value);
 		void load(u16& target, u16 value);
-		void load_memory(u16 address, u16 value);
-
-		void load_imm(u8& target, u8 value);
-		void load_imm(u16& target, u16 value);
+		void load_memory(u16 address, u8 value);
 
 		/* Arithmetic */
 		void add(u16& target, u16 value);

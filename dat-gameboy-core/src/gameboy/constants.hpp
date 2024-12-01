@@ -1,13 +1,11 @@
 #pragma once
 #include "common.hpp"
-#include "flags/video_mode.hpp"
 
 namespace dat
 {
 	constexpr static inline u64 SM83Period_ns = 238;	// 4.194304 MHz
-	constexpr inline u64 ROMSize = 256;
 	constexpr static inline u8 TCyclesPerMCycle = 4;
-	constexpr static inline u8 CyclesPerFrame = 70224;
+	constexpr static inline u32 CyclesPerFrame = 70224;
 
 	constexpr static inline u32 GameboyScreenWidth  = 160;
 	constexpr static inline u32 GameboyScreenHeight = 144;

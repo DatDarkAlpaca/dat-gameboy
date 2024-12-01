@@ -57,6 +57,9 @@ namespace dat
 
 		execute_interrupts();
 
+		if (m_isHalted)
+			return;
+
 		if (m_isFirstFetch)
 		{
 			m_Instruction = fetch_instruction();
@@ -100,52 +103,56 @@ namespace dat
 		m_isHalted = false;
 		m_IME = false;
 
+		A = 0;
+		BC.set(0x0000);
+		DE.set(0x0000);
+		HL.set(0x0000);
+		SP.set(0x0000);
+		PC.set(0x0000);
+
 		m_Instruction = {};
 	}
 
 	void s_SharpSM83::execute_interrupts()
 	{
-		u8 interrupts = r_Memory->interrupt_flag().get_value() & r_Memory->interrupt_enable().get_value();
+		if (!m_IME)
+			return;
+
+		u8 interrupts = r_Memory->IF().get() & r_Memory->IE().get();
 		if (!interrupts)
 			return;
 
 		if (m_isHalted && interrupts != 0x0)
 			m_isHalted = false;
 	
-		if (!r_Memory->interrupt_enable().get_value())
-			return;
-
+		m_IME = false;
 		push(PC);
 
-		if (handle_interrupt(0, interrupt::VBlank))
+		if (handle_interrupt(0, interrupt::VBlank, interrupts))
 			return;
 
-		if (handle_interrupt(1, interrupt::LCDCStatus))
+		if (handle_interrupt(1, interrupt::LCDCStatus, interrupts))
 			return;
 
-		if (handle_interrupt(2, interrupt::Timer))
+		if (handle_interrupt(2, interrupt::Timer, interrupts))
 			return;
 
-		if (handle_interrupt(3, interrupt::Serial))
+		if (handle_interrupt(3, interrupt::Serial, interrupts))
 			return;
 
-		if (handle_interrupt(4, interrupt::Joypad))
+		if (handle_interrupt(4, interrupt::Joypad, interrupts))
 			return;
 	}
 
-	bool s_SharpSM83::handle_interrupt(u8 interrupt, u16 source)
+	bool s_SharpSM83::handle_interrupt(u8 interrupt, u16 source, u8 interruptsEnabled)
 	{
-		if(!interrupt)
+		if (!check_bit(interruptsEnabled, interrupt))
 			return false;
 
-		interrupt = 0;
-		r_Memory->interrupt_flag().write(interrupt, source);
-		r_Memory->interrupt_flag().commit();
-
+		r_Memory->IF().set(interrupt, false);
 		PC.set(source);
-		m_IME = false;
 
-		return true;		
+		return true;
 	}
 
 	void s_SharpSM83::execute_instruction()
@@ -254,7 +261,7 @@ namespace dat
 
 	void s_SharpSM83::stop()
 	{
-		// TODO: implement
+		m_isHalted = true;
 	}
 
 	void s_SharpSM83::halt()
@@ -282,19 +289,9 @@ namespace dat
 		target = value;
 	}
 
-	void s_SharpSM83::load_memory(u16 address, u16 value)
+	void s_SharpSM83::load_memory(u16 address, u8 value)
 	{
 		r_Memory->write(address, value);
-	}
-
-	void s_SharpSM83::load_imm(u8& target, u8 value)
-	{
-		target = value;
-	}
-
-	void s_SharpSM83::load_imm(u16& target, u16 value)
-	{
-		target = value;
 	}
 
 	void s_SharpSM83::add(u16& target, u16 value)

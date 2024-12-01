@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 {
 	dat::initialize_logger();
 
-	//::testing::GTEST_FLAG(filter) = "GameboyFileTests_0X*";
+	::testing::GTEST_FLAG(filter) = "GameboyFileTests_0X*";
 	testing::InitGoogleTest(&argc, argv);
 
 	return RUN_ALL_TESTS();

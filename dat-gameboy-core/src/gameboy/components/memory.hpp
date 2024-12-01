@@ -1,10 +1,9 @@
 #pragma once
 #include <cstdlib>
-#include "joypad.hpp"
+#include "common.hpp"
 #include "cpu/flags.hpp"
 #include "cartridge/cartridge.hpp"
-
-#include "common.hpp"
+#include "registers/registers.hpp"
 
 namespace dat
 {
@@ -23,11 +22,27 @@ namespace dat
 
 		void write(u16 address, u8 value);
 
-	// Input:
+	// Hardware Registers:
 	public:
-		s_Joypad joypad() const { return s_Joypad { memory[0xFF00] }; }
+		s_JOYP& joypad() { return m_Joypad; }
 
-		void set_joypad_input(bool value) const { }
+		s_IE& IE() { return m_InterruptEnable; }
+		s_IF& IF() { return m_InterruptFlag; }
+
+		s_LCDC& lcdc() { return m_LCDC; }
+		s_STAT& STAT() { return m_STAT; }
+
+		s_SCY& SCY() { return m_SCY; }
+		s_SCX& SCX() { return m_SCX; }
+		s_LY&  LY()  { return m_LY;  }
+		s_LYC& LYC() { return m_LYC; }
+
+		s_BGP&  BGP()  { return m_BGP; }
+		s_OBP0& OBP0() { return m_OBP0; }
+		s_OBP1& OBP1() { return m_OBP1; }
+
+		s_WY& WY() { return m_WY; }
+		s_WX& WX() { return m_WX; }
 
 	// VRAM:
 	public:
@@ -41,29 +56,9 @@ namespace dat
 		inline u8* vram_tilemap0() const { return &memory[0x9800]; }
 		inline u8* vram_tilemap1() const { return &memory[0x9C00]; }
 
-		// TODO: breaking point. LCDC might need to be a reference.
-		s_LCDC& lcdc() { return s_LCDC{ memory[0xFF40] }; }
-
-		u8& LY() const { return memory[0xFF44]; }
-		u8& LYC() const { return memory[0xFF45]; }
-		s_STAT& STAT() { return s_STAT{ memory[0xFF41] }; }
-
-		u8 SCY() const { return memory[0xFF42]; }
-		u8 SCX() const { return memory[0xFF43]; }
-
-		s_BGP& BGP() { return s_BGP{ memory[0xFF47] }; }
-		u8& OBP0() const { return memory[0xFF48]; }
-		u8& OBP1() const { return memory[0xFF49]; }
-
-		u8 WY() const { return memory[0xFF4A]; }
-		u8 WX() const { return memory[0xFF4B]; }
-
-	// Interrupts:
 	public:
-		s_InterruptEnable& interrupt_enable() { return s_InterruptEnable { memory[0xFFFF] }; }
-		s_InterruptEnable& interrupt_flag  () { return s_InterruptEnable { memory[0xFFFF] }; }
-
-	public:
+		inline bool bootloader_enabled() const { return memory[0xFF50] != 0x1; }
+		
 		inline u8* get_rom() const { return cartridge->get_rom(); }
 
 		inline u8* get_ram() const { return cartridge->get_ram(); }
@@ -71,8 +66,27 @@ namespace dat
 		inline u8* get_memory() const { return memory; }
 
 	private:
+		s_JOYP m_Joypad;
+		s_IF m_InterruptFlag;
+
+		s_LCDC m_LCDC;
+		s_STAT m_STAT;
+		s_SCY m_SCY;
+		s_SCX m_SCX;
+		s_LY m_LY;
+		s_LYC m_LYC;
+
+		s_BGP m_BGP;
+		s_OBP0 m_OBP0;
+		s_OBP1 m_OBP1;
+
+		s_WY m_WY;
+		s_WX m_WX;
+
+		s_IE m_InterruptEnable;
+
+	private:
 		dat_shared<ICartridge> cartridge;
 		u8* memory = nullptr;
-		bool m_IsBootActive = true;
 	};
 }

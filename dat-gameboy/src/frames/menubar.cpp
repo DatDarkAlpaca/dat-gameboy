@@ -82,6 +82,9 @@ namespace dat
 	void s_Menubar::load_rom_action()
 	{
 		dat_shared<ICartridge> cartridge = load_rom();
+		if (!cartridge)
+			return;
+
 		LoadROMFileEvent event(cartridge);
 
 		callback(event);

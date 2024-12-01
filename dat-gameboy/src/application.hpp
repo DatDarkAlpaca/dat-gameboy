@@ -5,7 +5,9 @@
 #include <gameboy/file.hpp>
 #include <gameboy/instruction/instruction_set.hpp>
 
+#include "utils/clock.hpp"
 #include "frames/frames.hpp"
+#include "events/input_handler.hpp"
 #include "core/cartridge_holder.hpp"
 #include "core/assets/texture_library.hpp"
 
@@ -43,6 +45,7 @@ namespace dat
 		Window window;
 		dat_unique<s_Gameboy> gameboy;
 		dat_unique<s_QuadRenderer> mainRenderer;
+		s_InputHandler inputHandler;
 
 	private:
 		s_TextureLibrary textureLibrary;

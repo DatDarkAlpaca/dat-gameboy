@@ -96,6 +96,7 @@ void GameboyTest::run_test(const std::filesystem::path& filepath)
 	for (const auto& testEntry : test)
 	{
 		gameboy.cpu.restart();
+		gameboy.memory.write(0xFF50, 0x1);
 
 		GTEST_LOG_(INFO) << testEntry.testName << " | Index: " << index;
 		prepare_cpu_data(testEntry.initialCondition);

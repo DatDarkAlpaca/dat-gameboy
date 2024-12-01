@@ -271,7 +271,7 @@ namespace dat
 	void s_SharpSM83::run_FA() { load(A, value_at(fetch_word())); }						// LD A, [a16]
 	void s_SharpSM83::run_FB() { ei(); }												// EI
 	void s_SharpSM83::run_FC() { illegal("0xFC"); }										// —	
-	void s_SharpSM83::run_FD() { illegal("0xFF"); }										// —	
+	void s_SharpSM83::run_FD() { illegal("0xFD"); }										// —	
 	void s_SharpSM83::run_FE() { cp(fetch_byte()); }									// CP A, n8
 	void s_SharpSM83::run_FF() { rst(0x38); }											// RST $38
 }

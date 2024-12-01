@@ -83,7 +83,7 @@ namespace dat
 	void s_Disassembler::render_memory_entries()
 	{
 		const int numEntries = 1 * 1024;
-		for (int i = 0; i < numEntries; ++i)
+		for (int i = 0xFF00; i < 0xFFFF; ++i)
 		{
 			char address[16];
 			snprintf(address, sizeof(address), "0x%04X", i);
@@ -131,7 +131,7 @@ namespace dat
 				ImGui::Text("AF: %01x%01x", cpu.A, cpu.F);
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("LCDC: %01x", mem.lcdc().get_value());
+				ImGui::Text("LCDC: %01x", mem.lcdc().get());
 			}
 
 			ImGui::TableNextRow();
@@ -142,7 +142,7 @@ namespace dat
 				ImGui::Text("BC: %01x%01x", cpu.BC.get_msb(), cpu.BC.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("STAT: %01x", mem.STAT().get_value());
+				ImGui::Text("STAT: %01x", mem.STAT().get());
 			}
 
 			ImGui::TableNextRow();
@@ -150,10 +150,10 @@ namespace dat
 			// DE | LY
 			{
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("BC: %01x%01x", cpu.DE.get_msb(), cpu.DE.get_lsb());
+				ImGui::Text("DE: %01x%01x", cpu.DE.get_msb(), cpu.DE.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("LY: %01x", mem.LY());
+				ImGui::Text("LY: %01x", mem.LY().get());
 			}
 
 			ImGui::TableNextRow();
@@ -175,7 +175,7 @@ namespace dat
 				ImGui::Text("SP: %01x%01x", cpu.SP.get_msb(), cpu.SP.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("IE: %01x", mem.interrupt_enable().get_value());
+				ImGui::Text("IE: %01x", mem.IE().get());
 			}
 
 			ImGui::TableNextRow();
@@ -186,7 +186,7 @@ namespace dat
 				ImGui::Text("PC: %01x%01x", cpu.PC.get_msb(), cpu.PC.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("IF: %01x", mem.interrupt_flag().get_value());
+				ImGui::Text("IF: %01x", mem.IF().get());
 			}
 
 			ImGui::TableNextRow();

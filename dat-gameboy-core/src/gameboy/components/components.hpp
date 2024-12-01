@@ -1,5 +1,4 @@
 #pragma once
-#include "gameboy/components/clock.hpp"
 #include "cpu/registers.hpp"
 #include "cpu/sharp_sm83.hpp"
 #include "cpu/flags.hpp"

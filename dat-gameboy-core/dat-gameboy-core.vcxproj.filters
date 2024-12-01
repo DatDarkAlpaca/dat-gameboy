@@ -142,7 +142,7 @@
     <ClInclude Include="src\gameboy\components\cartridge\cartridge.hpp">
       <Filter>gameboy\components</Filter>
     </ClInclude>
-    <ClInclude Include="src\gameboy\components\clock.hpp">
+    <ClInclude Include="src\utils\clock.hpp">
       <Filter>gameboy\components</Filter>
     </ClInclude>
     <ClInclude Include="src\gameboy\components\components.hpp">
@@ -245,10 +245,18 @@
     <ClInclude Include="src\utils\string.hpp">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\gameboy\components\joypad.hpp" />
     <ClInclude Include="src\gameboy\components\cartridge\cartridge_header.hpp" />
-    <ClInclude Include="src\gameboy\flags\video_mode.hpp" />
     <ClInclude Include="src\gameboy\components\cpu\interrupt_sources.hpp" />
+    <ClInclude Include="src\gameboy\components\registers\hardware_register.hpp" />
+    <ClInclude Include="src\gameboy\components\registers\joypad.hpp" />
+    <ClInclude Include="src\gameboy\components\registers\registers.hpp" />
+    <ClInclude Include="src\gameboy\components\registers\interrupt.hpp" />
+    <ClInclude Include="src\gameboy\components\registers\lcd_control.hpp" />
+    <ClInclude Include="src\gameboy\components\registers\lcd_status.hpp" />
+    <ClInclude Include="src\gameboy\components\registers\viewport_scroll.hpp" />
+    <ClInclude Include="src\gameboy\components\registers\line.hpp" />
+    <ClInclude Include="src\gameboy\components\registers\palette.hpp" />
+    <ClInclude Include="src\gameboy\components\registers\window_scroll.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\assets\texture_library.cpp">
