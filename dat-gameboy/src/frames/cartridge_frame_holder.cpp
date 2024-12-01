@@ -77,7 +77,7 @@ namespace dat
 		std::string cartridgeName = cartridge->filepath.filename().string();
 		m_Frames[handle] = dat::make_unique<s_CartridgeFrame>(cartridgeName, handle);
 
-		auto& frame = m_Frames[m_Frames.size() - 1];
+		auto& frame = m_Frames[static_cast<cartridge_handle>(m_Frames.size() - 1)];
 		frame->initialize(m_Texture, 78.f * 3, 96.f * 3);
 		frame->set_event_callback(callback);
 

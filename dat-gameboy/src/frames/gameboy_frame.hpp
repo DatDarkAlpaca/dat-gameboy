@@ -37,11 +37,11 @@ namespace dat
 		
 		void update(const std::array<e_Color, 160 * 144>& data)
 		{
-			u8 rgbBuffer[160 * 144 * 3];
-			glm::vec3 colorWhite = { 255, 255, 255 };
-			glm::vec3 colorLight = { 155, 155, 155 };
-			glm::vec3 colorDark  = {  90,  90,  90 };
-			glm::vec3 colorBlack = { 000, 000, 000 };
+			u8 rgbBuffer[160 * 144 * 3] = {};
+			glm::u8vec3 colorWhite = { 255, 255, 255 };
+			glm::u8vec3 colorLight = { 155, 155, 155 };
+			glm::u8vec3 colorDark  = {  90,  90,  90 };
+			glm::u8vec3 colorBlack = { 000, 000, 000 };
 
 			size_t index = 0;
 			for (const e_Color& color : data)

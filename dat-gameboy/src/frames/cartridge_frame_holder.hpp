@@ -28,14 +28,14 @@ namespace dat
 	
 	private:
 		std::unordered_map<cartridge_handle, dat_unique<s_CartridgeFrame>> m_Frames;
-		cartridge_handle m_ScheduledToDestroy;
+		cartridge_handle m_ScheduledToDestroy = invalid_asset;
 
-		s_TextureLibrary* m_TextureLibrary;
-		asset_handle m_TextureHandle;
-		asset_handle m_InvalidCartridgeTextureHandle;
+		s_TextureLibrary* m_TextureLibrary = nullptr;
+		asset_handle m_TextureHandle = invalid_asset;
+		asset_handle m_InvalidCartridgeTextureHandle = invalid_asset;
 
-		gl_handle m_Texture;
-		gl_handle m_InvalidTexture;
+		gl_handle m_Texture = invalid_handle;
+		gl_handle m_InvalidTexture = invalid_handle;
 
 	private:
 		NON_OWNING s_CartridgeHolder* r_Holder = nullptr;

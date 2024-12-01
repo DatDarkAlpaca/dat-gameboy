@@ -20,7 +20,7 @@ namespace dat
 	{
 	public:
 		s_Buffer(u8* data, size_t size, 
-			     std::function<u8*(u32)> allocator = default_allocator, 
+			     std::function<u8*(u64)> allocator = default_allocator, 
 			     std::function<void(u8*)> deleter = default_deleter)
 			: data(data) 
 			, size(size)

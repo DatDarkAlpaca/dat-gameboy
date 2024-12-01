@@ -99,7 +99,7 @@ namespace dat
 
 	void s_DatApplication::on_update()
 	{
-		auto x = 17592;
+		u32 x = 17592;
 		for (u32 i = 0; i < x; ++i) 
 		{
 			gameboy->cpu.tick();
