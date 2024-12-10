@@ -55,4 +55,9 @@ namespace dat
 		else
 			turnOn();
 	}
+
+	void s_Gameboy::setPaused(bool value)
+	{
+		m_IsPaused = value;
+	}
 }

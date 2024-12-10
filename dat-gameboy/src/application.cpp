@@ -94,6 +94,12 @@ namespace dat
 			return false;
 		});
 
+		// Gameboy:
+		subscriber.subscribe<GameboyTogglePowerEvent>([&](const GameboyTogglePowerEvent&) -> bool {
+			gameboyFrame->update(gameboy->ppu.get_framebuffer());
+			return false;
+		});
+
 		// Frames:
 		cartridgeAnalyzer->on_event(event);
 		cartridgeFrames->on_event(event);
@@ -189,8 +195,13 @@ namespace dat
 			}
 			
 			auto gameboyTexture = create_texture(descriptor, textureData->buffer.data);
-			gameboyFrame->initialize(gameboyTexture, 128.f * 4, 204.f * 4);
-			gameboyFrame->set_scalable(true);
+			gameboyFrame->initialize(
+				gameboyTexture, 
+				GameboySpriteWidth, 
+				GameboySpriteHeight, 
+				ImGuiWindowFlags_NoResize
+			);
+			gameboyFrame->set_event_callback(BIND(&s_DatApplication::on_event, this));
 		}
 
 		// Cartridge Frames:

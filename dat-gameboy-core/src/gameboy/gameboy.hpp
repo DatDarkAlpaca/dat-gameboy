@@ -15,7 +15,9 @@ namespace dat
 		void load_cartridge(const dat_shared<ICartridge>& cartridge);
 
 	public:
-		bool isOn() const { return m_IsTurnedOn; }
+		inline bool isOn() const { return m_IsTurnedOn; }
+
+		inline bool isPaused() const { return m_IsPaused; }
 
 		void turnOff();
 
@@ -25,6 +27,8 @@ namespace dat
 
 		void togglePower();
 
+		void setPaused(bool value);
+
 	public:
 		s_SharpSM83 cpu;
 		s_MMU memory;
@@ -33,5 +37,6 @@ namespace dat
 
 	private:
 		bool m_IsTurnedOn = false;
+		bool m_IsPaused = false;
 	};
 }

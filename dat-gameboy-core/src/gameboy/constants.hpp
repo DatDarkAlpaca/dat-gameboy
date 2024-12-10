@@ -9,8 +9,16 @@ namespace dat
 
 	constexpr static inline u32 ClockRate = 4194304;
 
-	constexpr static inline u32 GameboyScreenWidth  = 160;
+	constexpr static inline u32 GameboyScreenWidth = 160;
 	constexpr static inline u32 GameboyScreenHeight = 144;
+
+	constexpr static inline u32 GameboySpriteWidth						= 128;
+	constexpr static inline u32 GameboySpriteHeight						= 204;
+	constexpr static inline u32 GameboySpriteScreenWidth				= 66;
+	constexpr static inline u32 GameboySpriteScreenHeight				= 60;
+	constexpr static inline u32 GameboySpritePixelsUntilScreenX			= 38;
+	constexpr static inline u32 GameboySpritePixelsUntilScreenY			= 38;
+	constexpr static inline u32 GameboySpriteScalingFactor				= 4;
 
 	constexpr static inline u32 SpriteAttrAmountOAM = 40;
 	constexpr static inline u32 BackgroundMapTileSize = 256;

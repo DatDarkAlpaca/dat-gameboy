@@ -12,7 +12,12 @@ namespace dat
 	constexpr inline u64 CARTRIDGE_REMOVE_EVENT				= static_cast<u64>(EventType::AMOUNT) + 3;
 	constexpr inline u64 PROPAGATE_CARTRIDGE_REMOVE_EVENT	= static_cast<u64>(EventType::AMOUNT) + 4;
 	constexpr inline u64 CARTRIDGE_FOCUS_EVENT				= static_cast<u64>(EventType::AMOUNT) + 5;
+
 	constexpr inline u64 DISASSEMBLER_STEP_EVENT			= static_cast<u64>(EventType::AMOUNT) + 6;
+	constexpr inline u64 DISASSEMBLER_RUN_EVENT				= static_cast<u64>(EventType::AMOUNT) + 7;
+	constexpr inline u64 DISASSEMBLER_PAUSE_EVENT			= static_cast<u64>(EventType::AMOUNT) + 8;
+
+	constexpr inline u64 GAMEBOY_TOGGLE_POWER_EVENT			= static_cast<u64>(EventType::AMOUNT) + 9;
 }
 
 namespace dat
@@ -103,5 +108,21 @@ namespace dat
 	struct DisassemblerStepEvent : public Event
 	{
 		DEFINE_EVENT(static_cast<EventType>(DISASSEMBLER_STEP_EVENT));
+	};
+
+	struct DisassemblerRunEvent : public Event
+	{
+		DEFINE_EVENT(static_cast<EventType>(DISASSEMBLER_RUN_EVENT));
+	};
+
+	struct DisassemblerPauseEvent : public Event
+	{
+		DEFINE_EVENT(static_cast<EventType>(DISASSEMBLER_PAUSE_EVENT));
+	};
+
+	// Gameboy:
+	struct GameboyTogglePowerEvent : public Event
+	{
+		DEFINE_EVENT(static_cast<EventType>(GAMEBOY_TOGGLE_POWER_EVENT));
 	};
 }

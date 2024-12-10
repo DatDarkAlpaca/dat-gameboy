@@ -11,17 +11,20 @@ namespace dat
 
 		void set_texture(gl_handle texture);
 
-		void set_scalable(bool value);
-
 	protected:
 		void render_frame(const char* frameName, bool handleEnd = true);
+
+	protected:
+		void set_scale(float scale);
+
+		inline float get_scale() const { return m_Scale; }
 
 	private:
 		ImGuiWindowFlags m_ExtraFlags = 0;
 		gl_handle m_Texture = invalid_handle;
 		float m_Width = 0;
 		float m_Height = 0;
-		bool m_Scalable = false;
 		bool m_IsVisible = true;
+		float m_Scale = 1;
 	};
 }

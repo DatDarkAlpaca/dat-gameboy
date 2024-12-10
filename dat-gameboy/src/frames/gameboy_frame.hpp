@@ -17,6 +17,7 @@ namespace dat
 			descriptor.generateMipmaps = false;
 
 			m_ScreenTexture = create_texture(descriptor, nullptr);
+			initialize_screen();
 		}
 
 	public:
@@ -29,10 +30,13 @@ namespace dat
 			render_popup();
 			
 			ImGui::SetCursorScreenPos({ 
-				gameboyPosition.x, 
-				gameboyPosition.y 
+				gameboyPosition.x + 30 * get_scale(),
+				gameboyPosition.y + 30 * get_scale()
 			});
-			ImGui::Image((ImTextureID)(intptr_t)m_ScreenTexture, { 160 * 2, 144 * 2});
+			ImGui::Image((ImTextureID)(intptr_t)m_ScreenTexture, { 
+				GameboySpriteScreenWidth * get_scale(),
+				GameboySpriteScreenHeight * get_scale()
+			});
 			
 			ImGui::End();
 		}
@@ -86,23 +90,81 @@ namespace dat
 		}
 
 	private:
+		void initialize_screen() 
+		{
+			u8 rgbBuffer[160 * 144 * 3] = {};
+			for (u64 i = 0; i < 160 * 144 * 3; ++i)
+				rgbBuffer[i] = 0;
+
+			update_texture(m_ScreenTexture, 160, 144, GL_RGB, GL_UNSIGNED_BYTE, rgbBuffer);
+		}
+
 		void render_popup()
 		{
 			if (ImGui::BeginPopupContextItem("GameboyPopup", ImGuiMouseButton_Right))
 			{
 				ImGui::Text("Gameboy");
 
-				std::string turnText = gameboy.isOn() ? "Turn Off" : "Turn On";
-				if (ImGui::Button(turnText.c_str()))
-					gameboy.togglePower();
+				// Power
+				{
+					std::string turnText = gameboy.isOn() ? "Turn Off" : "Turn On";
+					if (ImGui::Button(turnText.c_str()))
+					{
+						gameboy.togglePower();
 
+						GameboyTogglePowerEvent powerEvent;
+						callback(powerEvent);
+					}
+				}
+				
+				// Scale:
+				{
+					render_popup_scale();
+				}
 
 				ImGui::EndPopup();
 			}
 		}
 
 	private:
+		void render_popup_scale()
+		{
+			if (ImGui::Combo("Scaling Factor", &m_ScalingFactorOption, ScalingFactorOptions, 9))
+			{
+				float scale = 1;
+				switch (m_ScalingFactorOption)
+				{
+					case 0: scale =  0.5f; break;
+					case 1: scale = 0.75f; break;
+					case 2: scale =  1.0f; break;
+					case 3: scale = 1.25f; break;
+					case 4: scale =  1.5f; break;
+					case 5: scale = 1.75f; break;
+					case 6: scale =  2.0f; break;
+					case 7: scale =  4.0f; break;
+					case 8: scale =  8.0f; break;
+				}
+
+				set_scale(scale);
+			}
+		}
+
+	private:
 		gl_handle m_ScreenTexture;
 		s_Gameboy& gameboy;
+
+	private:
+		int m_ScalingFactorOption = 2;
+		static inline const char* ScalingFactorOptions[] = {
+			"0.5x",
+			"0.75x", 
+			"1.0x", 
+			"1.25x", 
+			"1.5x", 
+			"1.75x", 
+			"2x", 
+			"4x",
+			"8x"
+		};
 	};
 }

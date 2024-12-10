@@ -16,9 +16,9 @@ namespace dat
 		m_Texture = texture;
 	}
 
-	void s_ImageFrame::set_scalable(bool value)
+	void s_ImageFrame::set_scale(float scale)
 	{
-		m_Scalable = value;
+		m_Scale = scale;
 	}
 
 	void s_ImageFrame::render_frame(const char* frameName, bool handleEnd)
@@ -29,18 +29,8 @@ namespace dat
 		ImGui::SetNextWindowViewport(ImGui::GetMainViewport()->ID);
 		begin_frame(frameName, &m_IsVisible, m_ExtraFlags);
 
-		if(!m_Scalable)
-			ImGui::Image((ImTextureID)(intptr_t)m_Texture, { m_Width, m_Height });
-
-		else
-		{
-			ImVec2 screenSize = ImGui::GetContentRegionAvail();
-
-			float textureRatio = m_Height / m_Width;
-			float scaledHeight = textureRatio * screenSize.x;
-
-			ImGui::Image((ImTextureID)(intptr_t)m_Texture, { screenSize.x, scaledHeight });
-		}
+		ImGui::SetCursorPos(ImVec2(0, 0));
+		ImGui::Image((ImTextureID)(intptr_t)m_Texture, { m_Width * m_Scale, m_Height * m_Scale });
 
 		if(handleEnd)
 			ImGui::End();

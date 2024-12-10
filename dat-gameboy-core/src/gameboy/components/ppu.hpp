@@ -146,7 +146,7 @@ namespace dat
 	public:
 		void restart()
 		{
-			std::fill(m_Framebuffer.begin(), m_Framebuffer.end(), e_Color::WHITE);
+			std::fill(m_Framebuffer.begin(), m_Framebuffer.end(), e_Color::BLACK);
 			m_VideoMode = e_VideoMode::ACCESS_OAM;
 			m_Cycles = 0;
 		}

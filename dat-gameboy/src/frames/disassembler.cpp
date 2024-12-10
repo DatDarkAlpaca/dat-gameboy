@@ -255,14 +255,19 @@ namespace dat
 
 		ImGui::SameLine();
 
-		if (ImGui::Button("Run"))
+		if (r_Gameboy->isPaused())
 		{
+			if (ImGui::Button("Run"))
+			{
+				r_Gameboy->setPaused(false);
+			}
 		}
-
-		ImGui::SameLine();
-
-		if (ImGui::Button("Stop"))
+		else
 		{
-		}
+			if (ImGui::Button("Pause"))
+			{
+				r_Gameboy->setPaused(true);
+			}
+		}		
 	}
 }
