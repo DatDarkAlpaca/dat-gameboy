@@ -33,6 +33,14 @@ You may also need to add an environment variable to use `premake5` on Windows ma
    Use the generated project files to build the project. 
    After that, you should have a working copy under `dat-gameboy/build/bin/{configuration}/dat-gameboy`. 
 
+# References
+* [GBDev - Pandocs](https://gbdev.io/pandocs)
+* [GBDev - Optables](https://gbdev.io/gb-opcodes/optables/)
+* [rgbds](https://rgbds.gbdev.io/docs/v0.8.0/gbz80.7)
+* [Game Boy: Complete Technical Reference](https://gekkio.fi)
+* [GBDev - Bootstrap](https://gbdev.gg8.se/wiki/articles/Gameboy_Bootstrap_ROM#The_.27Pokemon.27_CGB_bootstrap)
+* [GBEDB - PPU](https://hacktix.github.io/GBEDG/ppu/)
+
 # License
 
 This project is licensed under the [MIT License](https://opensource.org/licenses/MIT) - see the [LICENSE](LICENSE) file for details
