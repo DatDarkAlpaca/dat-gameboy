@@ -7,11 +7,14 @@ newaction {
     description = "Clears generated project files and binaries",
 
     execute = function()
-        os.rmdir("./build")
+        os.rmdir("./dat-gameboy/res")
+		os.rmdir("./dat-gameboy-test/res")
+		
+		os.rmdir("./.vs")
+		os.rmdir("./build")		
         os.rmdir("./bin")
         os.rmdir("./intermediate")
-        os.rmdir("./.vs")
-        os.remove('*.sln')
+		
         os.remove('**.sln')
         os.remove('**.vcxproj')
         os.remove('**.vcxproj.filters')

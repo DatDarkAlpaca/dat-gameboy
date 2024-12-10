@@ -6,7 +6,7 @@ function create_project(project_name, project_kind)
 
         targetdir(binaries_path .. "/%{prj.name}")
         objdir(intermediate_path .. "/%{prj.name}")
-
+		
         pchheader "pch.hpp"
         pchsource "src/pch.cpp"
 
@@ -19,7 +19,7 @@ function create_project(project_name, project_kind)
     
         includedirs {
             "%{prj.location}",
-            "%{prj.location}/src"
+            "%{prj.location}/src",
         }
 
         -- Configurations

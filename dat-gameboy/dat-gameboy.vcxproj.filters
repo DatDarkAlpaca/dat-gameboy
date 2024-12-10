@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="actions">
+      <UniqueIdentifier>{D6EDED1D-42CD-6CB9-4BE5-F78FB743D31A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{4E40957C-3A77-960D-E363-7C10CF79120F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="events">
+      <UniqueIdentifier>{5A9D08FC-463F-33D2-2FFA-46261B3BBA22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="frames">
+      <UniqueIdentifier>{432C13FE-2FCE-3DD4-1889-512804CAC424}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\actions\rom_actions.hpp">
+      <Filter>actions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\application.hpp" />
+    <ClInclude Include="src\core\cartridge_handle.hpp">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\cartridge_holder.hpp">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\events\frame_events.hpp">
+      <Filter>events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\events\input_handler.hpp">
+      <Filter>events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frames\cartridge_analyzer.hpp">
+      <Filter>frames</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frames\cartridge_frame.hpp">
+      <Filter>frames</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frames\cartridge_frame_holder.hpp">
+      <Filter>frames</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frames\disassembler.hpp">
+      <Filter>frames</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frames\frame.hpp">
+      <Filter>frames</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frames\frames.hpp">
+      <Filter>frames</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frames\gameboy_frame.hpp">
+      <Filter>frames</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frames\headless_frame.hpp">
+      <Filter>frames</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frames\image_frame.hpp">
+      <Filter>frames</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frames\menubar.hpp">
+      <Filter>frames</Filter>
+    </ClInclude>
+    <ClInclude Include="src\frames\serial_reader.hpp">
+      <Filter>frames</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pch.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\application.cpp" />
+    <ClCompile Include="src\core\cartridge_holder.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\frames\cartridge_analyzer.cpp">
+      <Filter>frames</Filter>
+    </ClCompile>
+    <ClCompile Include="src\frames\cartridge_frame.cpp">
+      <Filter>frames</Filter>
+    </ClCompile>
+    <ClCompile Include="src\frames\cartridge_frame_holder.cpp">
+      <Filter>frames</Filter>
+    </ClCompile>
+    <ClCompile Include="src\frames\disassembler.cpp">
+      <Filter>frames</Filter>
+    </ClCompile>
+    <ClCompile Include="src\frames\image_frame.cpp">
+      <Filter>frames</Filter>
+    </ClCompile>
+    <ClCompile Include="src\frames\menubar.cpp">
+      <Filter>frames</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\pch.cpp" />
+  </ItemGroup>
+</Project>

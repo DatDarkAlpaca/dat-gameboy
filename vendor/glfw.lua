@@ -8,8 +8,7 @@ project "glfw"
     objdir(intermediate_path .. "/%{prj.name}")
 
 	defines {
-		"GLFW_STATIC",
-		"GLFW_VULKAN_STATIC"
+		"GLFW_STATIC"
 	}
 
     files {

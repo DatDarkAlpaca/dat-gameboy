@@ -6,6 +6,10 @@
 *.sln.docstates
 *.userprefs
 
+# Gameboy ROMs:
+*.gb
+*.bin
+
 # Visual studio file:
 .vs/
 *.sln
@@ -35,3 +39,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+
+# Extraneous resources
+dat-gameboy/res
+dat-gameboy-test/res

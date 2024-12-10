@@ -1,6 +1,3 @@
-[submodule "vendor/entt"]
-	path = vendor/entt
-	url = https://github.com/skypjack/entt
 [submodule "vendor/glad"]
 	path = vendor/glad
 	url = https://github.com/premake-libs/glad
@@ -23,9 +20,12 @@
 	path = vendor/imgui
 	url = https://github.com/ocornut/imgui
 	branch = docking
-[submodule "vendor/vma"]
-	path = vendor/vma
-	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
-[submodule "vendor/Vulkan-Headers"]
-	path = vendor/Vulkan-Headers
-	url = https://github.com/KhronosGroup/Vulkan-Headers
+[submodule "vendor/googletest"]
+	path = vendor/googletest
+	url = https://github.com/google/googletest
+[submodule "vendor/gameboy_tests"]
+	path = vendor/gameboy_tests
+	url = https://github.com/adtennant/GameboyCPUTests
+[submodule "vendor/tinyfiledialogs"]
+	path = vendor/tinyfiledialogs
+	url = https://github.com/native-toolkit/libtinyfiledialogs

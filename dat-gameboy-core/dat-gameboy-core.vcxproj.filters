@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="core">
+      <UniqueIdentifier>{4E40957C-3A77-960D-E363-7C10CF79120F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\assert">
+      <UniqueIdentifier>{4F77D360-BB2C-4C56-4421-462DB0D5425A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\assets">
+      <UniqueIdentifier>{9077D360-FC2C-4C56-8521-462DF1D5425A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\event">
+      <UniqueIdentifier>{3F54CC50-2B0C-0E9E-9413-E7F980EAA88E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\event\keyboard_events">
+      <UniqueIdentifier>{13F3F631-FF02-A302-68BC-072154EB919B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\event\mouse_events">
+      <UniqueIdentifier>{4B530109-B78A-49A0-C094-ADC32C4B7099}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\event\window_events">
+      <UniqueIdentifier>{DA4DB8F9-C672-077A-EFBD-EC09DB410698}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\logger">
+      <UniqueIdentifier>{7D462D7A-E9FB-A56F-72F0-9F46DEA49C73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\memory">
+      <UniqueIdentifier>{16E8D07B-829D-4971-0B92-434877464075}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gameboy">
+      <UniqueIdentifier>{E9F49FE6-55D4-1E82-5EEC-A958CA4A85E3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gameboy\components">
+      <UniqueIdentifier>{7E7A3E86-6A5E-FFDB-D3BE-F92EBFC1E95D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gameboy\components\cartridge">
+      <UniqueIdentifier>{E2DC116B-CE97-0117-774F-7A6163E94BA7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gameboy\components\cpu">
+      <UniqueIdentifier>{5503EF1D-41FD-1770-2A6A-AE8016037EDC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gameboy\components\registers">
+      <UniqueIdentifier>{A59A1287-9155-0233-3A0D-7B7D26A74CC3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gameboy\instruction">
+      <UniqueIdentifier>{3A2F43CD-A690-20DB-2FFE-668D9B5E579A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="graphics">
+      <UniqueIdentifier>{36EF08BC-22BC-63C7-4BD5-516F37019955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform">
+      <UniqueIdentifier>{4A63C33C-3630-1E48-5F49-0CF04B7553D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform\glfw">
+      <UniqueIdentifier>{49D5834D-B595-FF83-7ED0-4801EA4F4460}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform\glfw\opengl">
+      <UniqueIdentifier>{BDAA09EE-A939-93B7-5258-A7B23EC6A35D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="platform\glfw\window">
+      <UniqueIdentifier>{300A3900-1C99-C2C9-C5B7-D6C4B125D36F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{169C8510-82B0-ADC1-4B32-5121B705AAF2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\common.hpp" />
+    <ClInclude Include="src\core\assert\Assert.hpp">
+      <Filter>core\assert</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\assets\asset_handle.hpp">
+      <Filter>core\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\assets\texture_library.hpp">
+      <Filter>core\assets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\buffer.hpp">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\defines.hpp">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\event.hpp">
+      <Filter>core\event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\event_type.hpp">
+      <Filter>core\event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\events.hpp">
+      <Filter>core\event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\keyboard_events\key_pressed_event.hpp">
+      <Filter>core\event\keyboard_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\keyboard_events\key_released_event.hpp">
+      <Filter>core\event\keyboard_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\keyboard_events\key_repeat_event.hpp">
+      <Filter>core\event\keyboard_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\keyboard_events\keyboard_event.hpp">
+      <Filter>core\event\keyboard_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\mouse_events\mouse_event.hpp">
+      <Filter>core\event\mouse_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\mouse_events\mouse_moved_event.hpp">
+      <Filter>core\event\mouse_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\mouse_events\mouse_pressed_event.hpp">
+      <Filter>core\event\mouse_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\mouse_events\mouse_released_event.hpp">
+      <Filter>core\event\mouse_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\mouse_events\mouse_scroll_event.hpp">
+      <Filter>core\event\mouse_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\subscriber.hpp">
+      <Filter>core\event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\window_events\window_close_event.hpp">
+      <Filter>core\event\window_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\window_events\window_content_scale_event.hpp">
+      <Filter>core\event\window_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\window_events\window_focus_event.hpp">
+      <Filter>core\event\window_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\window_events\window_framebuffer_event.hpp">
+      <Filter>core\event\window_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\window_events\window_maximized_event.hpp">
+      <Filter>core\event\window_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\window_events\window_moved_event.hpp">
+      <Filter>core\event\window_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\event\window_events\window_resize_event.hpp">
+      <Filter>core\event\window_events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\logger\logger.hpp">
+      <Filter>core\logger</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\memory\memory.hpp">
+      <Filter>core\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\cartridge\cartridge.hpp">
+      <Filter>gameboy\components\cartridge</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\cartridge\cartridge_header.hpp">
+      <Filter>gameboy\components\cartridge</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\components.hpp">
+      <Filter>gameboy\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\cpu\flags.hpp">
+      <Filter>gameboy\components\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\cpu\interrupt_sources.hpp">
+      <Filter>gameboy\components\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\cpu\registers.hpp">
+      <Filter>gameboy\components\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\cpu\sharp_sm83.hpp">
+      <Filter>gameboy\components\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\memory.hpp">
+      <Filter>gameboy\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\ppu.hpp">
+      <Filter>gameboy\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\bank.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\hardware_register.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\interrupt.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\joypad.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\lcd_control.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\lcd_status.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\line.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\palette.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\registers.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\serial.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\timer.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\viewport_scroll.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\registers\window_scroll.hpp">
+      <Filter>gameboy\components\registers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\components\timer.hpp">
+      <Filter>gameboy\components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\constants.hpp">
+      <Filter>gameboy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\file.hpp">
+      <Filter>gameboy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\gameboy.hpp">
+      <Filter>gameboy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\instruction\instruction.hpp">
+      <Filter>gameboy\instruction</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\instruction\instruction_set.hpp">
+      <Filter>gameboy\instruction</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\instruction\opcode.hpp">
+      <Filter>gameboy\instruction</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameboy\utils.hpp">
+      <Filter>gameboy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\common_graphics.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\framebuffer.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\graphics_api.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\graphics_device.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\graphics_specification.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\quad_renderer.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\shader.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\ui.hpp">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pch.hpp" />
+    <ClInclude Include="src\platform\glfw\events_glfw.hpp">
+      <Filter>platform\glfw</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\glfw\opengl\setup_opengl.hpp">
+      <Filter>platform\glfw\opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\glfw\setup_glfw.hpp">
+      <Filter>platform\glfw</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\glfw\window\monitor_data.hpp">
+      <Filter>platform\glfw\window</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\glfw\window\monitor_glfw.hpp">
+      <Filter>platform\glfw\window</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\glfw\window\window_glfw.hpp">
+      <Filter>platform\glfw\window</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\glfw\window\window_properties.hpp">
+      <Filter>platform\glfw\window</Filter>
+    </ClInclude>
+    <ClInclude Include="src\platform\platform.hpp">
+      <Filter>platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\byte_utils.hpp">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\clock.hpp">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\file.hpp">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\file_observer.hpp">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\string.hpp">
+      <Filter>utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\core\assets\texture_library.cpp">
+      <Filter>core\assets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\logger\logger.cpp">
+      <Filter>core\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\stb.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameboy\components\cartridge\cartridge.cpp">
+      <Filter>gameboy\components\cartridge</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameboy\components\cpu\sharp_commands.cpp">
+      <Filter>gameboy\components\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameboy\components\cpu\sharp_sm83.cpp">
+      <Filter>gameboy\components\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameboy\components\memory.cpp">
+      <Filter>gameboy\components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameboy\gameboy.cpp">
+      <Filter>gameboy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gameboy\instruction\instruction_set.cpp">
+      <Filter>gameboy\instruction</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pch.cpp" />
+    <ClCompile Include="src\platform\glfw\opengl\setup_opengl.cpp">
+      <Filter>platform\glfw\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform\glfw\window\window_glfw.cpp">
+      <Filter>platform\glfw\window</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
