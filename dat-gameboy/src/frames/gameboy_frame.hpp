@@ -1,4 +1,5 @@
 #pragma once
+#include "constants.hpp"
 #include "image_frame.hpp"
 #include <gameboy/gameboy.hpp>
 #include "events/frame_events.hpp"
@@ -146,6 +147,9 @@ namespace dat
 				}
 
 				set_scale(scale);
+
+				GameboyFrameResizeEvent resizeEvent(scale);
+				callback(resizeEvent);
 			}
 		}
 

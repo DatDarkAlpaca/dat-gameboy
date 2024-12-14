@@ -10,7 +10,7 @@ namespace dat
 		s_Gameboy();
 
 	public:
-		void load_bootloader_rom(const std::vector<u8>& data) const;
+		void load_bootloader_rom(const std::vector<u8>& data);
 
 		void load_cartridge(const dat_shared<ICartridge>& cartridge);
 
@@ -34,6 +34,9 @@ namespace dat
 		s_MMU memory;
 		s_PPU ppu;
 		s_Timer timer;
+
+	private:
+		std::vector<u8> m_LoadedBoot;
 
 	private:
 		bool m_IsTurnedOn = false;

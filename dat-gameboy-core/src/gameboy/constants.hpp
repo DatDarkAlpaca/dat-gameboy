@@ -12,14 +12,6 @@ namespace dat
 	constexpr static inline u32 GameboyScreenWidth = 160;
 	constexpr static inline u32 GameboyScreenHeight = 144;
 
-	constexpr static inline u32 GameboySpriteWidth						= 128;
-	constexpr static inline u32 GameboySpriteHeight						= 204;
-	constexpr static inline u32 GameboySpriteScreenWidth				= 66;
-	constexpr static inline u32 GameboySpriteScreenHeight				= 60;
-	constexpr static inline u32 GameboySpritePixelsUntilScreenX			= 38;
-	constexpr static inline u32 GameboySpritePixelsUntilScreenY			= 38;
-	constexpr static inline u32 GameboySpriteScalingFactor				= 4;
-
 	constexpr static inline u32 SpriteAttrAmountOAM = 40;
 	constexpr static inline u32 BackgroundMapTileSize = 256;
 	constexpr static inline u32 TilePixelSize = 8;
@@ -38,4 +30,12 @@ namespace dat
 	constexpr static inline u64 CyclesOAM		= 80;			// Mode 1
 	constexpr static inline u64 CyclesVRAM		= 172;			// Mode 2
 	constexpr static inline u64 CyclesVBlank	= 4560;			// Mode 3
+
+	constexpr inline u16 OAM_Address = 0xFE00;
+	constexpr inline u16 VRAM_Block0_Address = 0x8000;
+	constexpr inline u16 VRAM_Block1_Address = 0x8800;
+	constexpr inline u16 VRAM_Block2_Address = 0x9000;
+
+	constexpr inline u16 VRAM_Tilemap_0_Address = 0x9800;
+	constexpr inline u16 VRAM_Tilemap_1_Address = 0x9C00;
 }

@@ -65,6 +65,7 @@
       <Filter>frames</Filter>
     </ClInclude>
     <ClInclude Include="src\pch.hpp" />
+    <ClInclude Include="src\constants.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\application.cpp" />

@@ -39,5 +39,6 @@ namespace dat
 
 	private:
 		NON_OWNING s_CartridgeHolder* r_Holder = nullptr;
+		float m_CurrentScale = 1.0f;
 	};
 }

@@ -58,7 +58,7 @@ namespace dat
 
 	void s_MMU::restart()
 	{
-		std::fill(memory + 0x100, memory + KB(64) - 0x100, 0);
+		std::fill(memory, memory + KB(64), 0);
 		cartridge = nullptr;
 	}
 
@@ -113,7 +113,7 @@ namespace dat
 		else if (address >= 0xFEA0 && address <= 0xFEFF)
 		{
 			DAT_LOG_WARN("Prohibited read at: {}", address);
-			return memory[address];
+			return 0xFF;
 		}
 
 		/* IO Registers */
@@ -197,7 +197,6 @@ namespace dat
 		else if (address >= 0xFEA0 && address <= 0xFEFF)
 		{
 			DAT_LOG_WARN("Prohibited write at: {}", address);
-			memory[address] = value;
 			return;
 		}
 
@@ -207,7 +206,10 @@ namespace dat
 		{
 			// LY
 			if (address == LY_Address)
+			{
 				memory[address] = 0x0;
+				return;
+			}
 
 			// DMA:
 			// TODO: DMA register.

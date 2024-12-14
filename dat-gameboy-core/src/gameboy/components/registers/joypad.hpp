@@ -70,5 +70,57 @@ namespace dat
 					break;
 			}
 		}
+
+		void set_buttons(e_Buttons button, bool pressed)
+		{
+			u8 mask = 0;
+
+			switch (button) 
+			{
+				case e_Buttons::SELECT: mask = static_cast<u8>(e_JOYP::SELECT_UP);	break;
+				case e_Buttons::START:  mask = static_cast<u8>(e_JOYP::START_DOWN); break;
+				case e_Buttons::B:      mask = static_cast<u8>(e_JOYP::B_LEFT);		break;
+				case e_Buttons::A:      mask = static_cast<u8>(e_JOYP::A_RIGHT);	break;
+				case e_Buttons::UP:     mask = static_cast<u8>(e_JOYP::SELECT_UP);	break;
+				case e_Buttons::DOWN:   mask = static_cast<u8>(e_JOYP::START_DOWN); break;
+				case e_Buttons::LEFT:   mask = static_cast<u8>(e_JOYP::B_LEFT);		break;
+				case e_Buttons::RIGHT:  mask = static_cast<u8>(e_JOYP::A_RIGHT);	break;
+				
+				default:
+					DAT_LOG_CRITICAL("Invalid joypad button set: {} (value: {})", (int)button, pressed);
+					return;
+			}
+
+			if (pressed) 
+			{
+				m_DPadButtons   &= ~mask;
+				m_ActionButtons &= ~mask;
+			}
+			else 
+			{
+				m_DPadButtons   |= mask;
+				m_ActionButtons |= mask;
+			}
+
+			*data = get_value();
+		}
+
+	private:
+		u8 get_value() const
+		{
+			uint8_t result = *data | 0xCF;
+
+			if (!(*data & static_cast<u8>(e_JOYP::SELECT_BUTTONS)))
+				result &= ~m_ActionButtons;
+			
+			if (!(*data & static_cast<u8>(e_JOYP::SELECT_DPAD)))
+				result &= ~m_DPadButtons;
+			
+			return result;
+		}
+
+	private:
+		u8 m_ActionButtons = 0x0F;
+		u8 m_DPadButtons = 0x0F;
 	};
 }

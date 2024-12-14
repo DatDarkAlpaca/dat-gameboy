@@ -62,15 +62,15 @@ namespace dat
 
 	// VRAM:
 	public:
-		inline u8* vram(u8 offset = 0) const { return &memory[0x8000 + offset]; }
-		inline u8* oam(u8 offset = 0)  const { return &memory[0xFE00 + offset]; }
+		inline u8* vram(u8 offset = 0) const { return &memory[VRAM_Block0_Address + offset]; }
+		inline u8* oam(u8 offset = 0)  const { return &memory[OAM_Address + offset]; }
 
-		inline u8* vram_block0() const { return &memory[0x8000]; }
-		inline u8* vram_block1() const { return &memory[0x8800]; }
-		inline u8* vram_block2() const { return &memory[0x9000]; }
+		inline u8* vram_block0() const { return &memory[VRAM_Block0_Address]; }
+		inline u8* vram_block1() const { return &memory[VRAM_Block1_Address]; }
+		inline u8* vram_block2() const { return &memory[VRAM_Block2_Address]; }
 
-		inline u8* vram_tilemap0() const { return &memory[0x9800]; }
-		inline u8* vram_tilemap1() const { return &memory[0x9C00]; }
+		inline u8* vram_tilemap0() const { return &memory[VRAM_Tilemap_0_Address]; }
+		inline u8* vram_tilemap1() const { return &memory[VRAM_Tilemap_1_Address]; }
 
 	public:		
 		inline u8* get_rom() const { return cartridge->get_rom(); }

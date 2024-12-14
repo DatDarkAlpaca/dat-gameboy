@@ -13,6 +13,8 @@ namespace dat
 		s_CartridgeFrame(const std::string& name, cartridge_handle handle);
 
 	public:
+		void on_event(Event& event);
+
 		void render();
 
 	private:

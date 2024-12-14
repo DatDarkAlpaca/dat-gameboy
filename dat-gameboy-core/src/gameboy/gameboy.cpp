@@ -16,9 +16,10 @@ namespace dat
 		timer.initialize(&memory.DIV(), &memory.TAC(), &memory.TIMA(), &memory.TMA(), &memory.IF());
 	}
 
-	void s_Gameboy::load_bootloader_rom(const std::vector<u8>& data) const
+	void s_Gameboy::load_bootloader_rom(const std::vector<u8>& data)
 	{
-		std::memcpy(memory.get_memory(), data.data(), data.size());
+		m_LoadedBoot = data;
+		std::memcpy(memory.get_memory(), m_LoadedBoot.data(), m_LoadedBoot.size());
 	}
 
 	void s_Gameboy::load_cartridge(const dat_shared<ICartridge>& cartridge)
@@ -30,11 +31,7 @@ namespace dat
 	void s_Gameboy::turnOff()
 	{
 		m_IsTurnedOn = false;
-
-		cpu.restart();
-		ppu.restart();
-		timer.restart();
-		memory.restart();
+		restart();
 	}
 
 	void s_Gameboy::turnOn()
@@ -44,8 +41,13 @@ namespace dat
 
 	void s_Gameboy::restart()
 	{
-		turnOff();
-		turnOn();
+		cpu.restart();
+		ppu.restart();
+		timer.restart();
+
+		memory.restart();
+		if(!m_LoadedBoot.empty())
+			std::memcpy(memory.get_memory(), m_LoadedBoot.data(), m_LoadedBoot.size());
 	}
 
 	void s_Gameboy::togglePower()

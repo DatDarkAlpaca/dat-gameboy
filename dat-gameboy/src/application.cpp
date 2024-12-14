@@ -89,8 +89,8 @@ namespace dat
 		// Disassembler:
 		subscriber.subscribe<DisassemblerStepEvent>([&](const DisassemblerStepEvent&) -> bool {
 			gameboy->cpu.tick();
-			gameboy->ppu.tick(4);
-			gameboy->timer.tick(4);
+			gameboy->ppu.tick(1);
+			gameboy->timer.tick(1);
 			return false;
 		});
 
@@ -114,8 +114,8 @@ namespace dat
 		for (u32 i = 0; i < cpuTicksPerFrame; ++i) 
 		{
 			gameboy->cpu.tick();
-			gameboy->timer.tick(4);
-			gameboy->ppu.tick(4);
+			gameboy->timer.tick(1);
+			gameboy->ppu.tick(1);
 		}
 		
 		gameboyFrame->update(gameboy->ppu.get_framebuffer());
@@ -199,7 +199,7 @@ namespace dat
 				gameboyTexture, 
 				GameboySpriteWidth, 
 				GameboySpriteHeight, 
-				ImGuiWindowFlags_NoResize
+				ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize
 			);
 			gameboyFrame->set_event_callback(BIND(&s_DatApplication::on_event, this));
 		}

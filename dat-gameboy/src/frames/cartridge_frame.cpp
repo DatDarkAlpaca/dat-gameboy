@@ -19,6 +19,16 @@ namespace dat
 			m_Name = "$INVALID_CARTRIDGE";
 	}
 
+	void s_CartridgeFrame::on_event(Event& event)
+	{
+		Subscriber subscriber(event);
+
+		subscriber.subscribe<GameboyFrameResizeEvent>([&](const GameboyFrameResizeEvent& event) -> bool {
+			set_scale(event.scale);
+			return false;
+		});
+	}
+
 	void s_CartridgeFrame::render()
 	{
 		render_frame(m_Name.c_str(), false);

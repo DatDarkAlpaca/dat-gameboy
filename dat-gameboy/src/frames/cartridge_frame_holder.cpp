@@ -1,6 +1,7 @@
 #include "pch.hpp"
 #include "cartridge_frame_holder.hpp"
 #include "core/cartridge_holder.hpp"
+#include "constants.hpp"
 
 namespace dat
 {
@@ -22,12 +23,21 @@ namespace dat
 			auto cartridge = r_Holder->get_cartridge(event.handle);
 			create_cartridge_frame(cartridge, event.handle);
 			return false;
-		});
+			});
 
 		subscriber.subscribe<CartridgeRemoveEvent>([&](const CartridgeRemoveEvent& event) -> bool {
 			m_ScheduledToDestroy = event.handle;
 			return false;
-		});
+			});
+
+		subscriber.subscribe<GameboyFrameResizeEvent>([&](const GameboyFrameResizeEvent& event) -> bool {
+			m_CurrentScale = event.scale;
+			return false;
+			});
+
+		// Frames:
+		for (const auto& [handle, cartridgeFrame] : m_Frames)
+			cartridgeFrame->on_event(event);
 	}
 
 	void s_CartridgeFrameHolder::render()
@@ -78,8 +88,14 @@ namespace dat
 		m_Frames[handle] = dat::make_unique<s_CartridgeFrame>(cartridgeName, handle);
 
 		auto& frame = m_Frames[handle];
-		frame->initialize(m_Texture, 78.f * 3, 96.f * 3);
+		frame->initialize(
+			m_Texture, 
+			GameboyCartridgeWidth, 
+			GameboyCartridgeHeight, 
+			ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize);
+
 		frame->set_event_callback(callback);
+		frame->set_scale(m_CurrentScale);
 
 		// Invalid Cartridge Texture:
 		if (!is_cartridge_logo_valid(cartridge->header))

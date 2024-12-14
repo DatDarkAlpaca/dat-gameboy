@@ -78,7 +78,7 @@ namespace dat
 					if (m_Cycles < CyclesHBlank)
 						return;
 
-					m_Cycles %= CyclesHBlank;
+					m_Cycles = 0;
 
 					write_line();
 					++r_Memory->LY();
@@ -99,7 +99,7 @@ namespace dat
 					if (m_Cycles < CyclesOAM)
 						return;
 
-					m_Cycles %= CyclesOAM;
+					m_Cycles = 0;
 
 					switch_mode(e_VideoMode::ACCESS_VRAM);
 				} break;
@@ -109,7 +109,7 @@ namespace dat
 					if (m_Cycles < CyclesVRAM)
 						return;
 
-					m_Cycles %= CyclesVRAM;
+					m_Cycles = 0;
 
 					bool hblankInterrupt = r_Memory->STAT().is_bit_set(e_STAT::MODE_0_INT_SELECT);
 					if (hblankInterrupt)
@@ -128,7 +128,7 @@ namespace dat
 					if (m_Cycles < CyclesVBlank)
 						return;
 
-					m_Cycles %= CyclesVBlank;
+					m_Cycles = 0;
 					++r_Memory->LY();
 
 					if (r_Memory->LY() != 154)
@@ -171,10 +171,13 @@ namespace dat
 
 			Palette palette = get_palette_colors(r_Memory->BGP());
 
-			u8* tileSet = (useTileSet0) ? r_Memory->vram_block0() : r_Memory->vram_block1();
-			u8* tileMap = (useTileMap0) ? r_Memory->vram_tilemap0() : r_Memory->vram_tilemap1();
+			u16 tileSetAddress = (useTileSet0) ? VRAM_Block0_Address : VRAM_Block1_Address;
+			u16 tileMapAddress = (useTileMap0) ? VRAM_Tilemap_0_Address : VRAM_Tilemap_1_Address;
 
 			u32 screenY = r_Memory->LY().get();
+
+			if (screenY >= GameboyScreenHeight)
+				return;
 
 			for (u8 screenX = 0; screenX < GameboyScreenWidth; ++screenX)
 			{
@@ -190,15 +193,17 @@ namespace dat
 				u8 tilePixelX = backgroundMapX % TilePixelSize;
 				u8 tilePixelY = backgroundMapY % TilePixelSize;
 
-				u8 tileID = *(tileMap + tileY * TilesPerLine + tileX);
+				u16 tileIDIndex = tileMapAddress + tileY * TilesPerLine + tileX;
+				u8 tileID = r_Memory->read(tileIDIndex);
 
 				// Addressing mode:
 				u8 tileMemoryOffset = useTileSet0
 					? tileID * BytesPerTile
 					: (static_cast<i8>(tileID) + 128) * BytesPerTile;
 
-				u8 pixelLine0 = *(tileSet + tileMemoryOffset + tilePixelY * 2);
-				u8 pixelLine1 = *(tileSet + tileMemoryOffset + tilePixelY * 2 + 1);
+				u16 pixelLineAddress = tileSetAddress + tileMemoryOffset + tilePixelY * 2;
+				u8 pixelLine0 = r_Memory->read(pixelLineAddress);
+				u8 pixelLine1 = r_Memory->read(pixelLineAddress + 1);
 
 				u8 pixelColor = get_pixel_from_line(pixelLine0, pixelLine1, tilePixelX);
 				e_Color screenColor = get_color_from_palette(pixelColor, palette);
@@ -214,8 +219,8 @@ namespace dat
 
 			Palette palette = get_palette_colors(r_Memory->BGP());
 
-			u8* tileSet = (useTileSet0) ? r_Memory->vram_block0() : r_Memory->vram_block1();
-			u8* tileMap = (useTileMap0) ? r_Memory->vram_tilemap0() : r_Memory->vram_tilemap1();
+			u16 tileSetAddress = (useTileSet0) ? VRAM_Block0_Address : VRAM_Block1_Address;
+			u16 tileMapAddress = (useTileMap0) ? VRAM_Tilemap_0_Address : VRAM_Tilemap_1_Address;
 
 			u32 screenY = r_Memory->LY().get();
 			u32 scrolledY = screenY - r_Memory->WY();
@@ -233,15 +238,17 @@ namespace dat
 				u8 tilePixelX = scrolledX % TilePixelSize;
 				u8 tilePixelY = scrolledY % TilePixelSize;
 
-				u8 tileID = *(tileMap + (tileY * TilesPerLine + tileX));
+				u16 tileIDIndex = tileMapAddress + tileY * TilesPerLine + tileX;
+				u8 tileID = r_Memory->read(tileIDIndex);
 
 				// Addressing:
 				u8 tileMemoryOffset = useTileSet0
 					? tileID * BytesPerTile
 					: (static_cast<i8>(tileID) + 128) * BytesPerTile;
 
-				u8 pixelLine0 = *(tileSet + tileMemoryOffset + 2 * tilePixelY);
-				u8 pixelLine1 = *(tileSet + tileMemoryOffset + 2 * tilePixelY + 1);
+				u16 pixelLineAddress = tileSetAddress + tileMemoryOffset + tilePixelY * 2;
+				u8 pixelLine0 = r_Memory->read(pixelLineAddress);
+				u8 pixelLine1 = r_Memory->read(pixelLineAddress + 1);
 
 				u8 pixelColor = get_pixel_from_line(pixelLine0, pixelLine1, tilePixelX);
 				e_Color screenColor = get_color_from_palette(pixelColor, palette);

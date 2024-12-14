@@ -17,7 +17,6 @@ namespace dat
 			, header(header)
 			, filepath(filepath)
 		{
-			this->rom.resize(rom_size());
 		}
 
 		ICartridge() = default;
@@ -89,13 +88,15 @@ namespace dat
 	public:
 		u8 read(u16 address) const override
 		{
+			if (address < 0 || address >= KB(32))
+				return 0xFF;
+
 			return rom[address];
 		}
 
 		void write(u16 address, u8 value) override
 		{
-			DAT_LOG_WARN("Cartridges without MBC cannot be written to.");
-			rom[address] = value;
+			return;
 		}
 	};
 

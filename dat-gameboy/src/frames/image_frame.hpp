@@ -14,7 +14,7 @@ namespace dat
 	protected:
 		void render_frame(const char* frameName, bool handleEnd = true);
 
-	protected:
+	public:
 		void set_scale(float scale);
 
 		inline float get_scale() const { return m_Scale; }

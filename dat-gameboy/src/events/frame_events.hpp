@@ -18,6 +18,8 @@ namespace dat
 	constexpr inline u64 DISASSEMBLER_PAUSE_EVENT			= static_cast<u64>(EventType::AMOUNT) + 8;
 
 	constexpr inline u64 GAMEBOY_TOGGLE_POWER_EVENT			= static_cast<u64>(EventType::AMOUNT) + 9;
+
+	constexpr inline u64 GAMEBOY_FRAME_RESIZE_EVENT			= static_cast<u64>(EventType::AMOUNT) + 10;
 }
 
 namespace dat
@@ -124,5 +126,21 @@ namespace dat
 	struct GameboyTogglePowerEvent : public Event
 	{
 		DEFINE_EVENT(static_cast<EventType>(GAMEBOY_TOGGLE_POWER_EVENT));
+	};
+
+	// Gameboy Frame:
+	struct GameboyFrameResizeEvent : public Event
+	{
+		DEFINE_EVENT(static_cast<EventType>(GAMEBOY_FRAME_RESIZE_EVENT));
+
+	public:
+		GameboyFrameResizeEvent(float scale)
+			: scale(scale)
+		{
+
+		}
+
+	public:
+		float scale;
 	};
 }

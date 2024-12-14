@@ -145,10 +145,10 @@ namespace dat
 			// AF | LCDC
 			{
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("AF: %01x%01x", cpu.A, cpu.F);
+				ImGui::Text("AF: 0x%02X%02X", (int)cpu.A, (int)cpu.F.get_register());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("LCDC: %01x", mem.lcdc().get());
+				ImGui::Text("LCDC: 0x%02X", (int)mem.lcdc().get());
 			}
 
 			ImGui::TableNextRow();
@@ -156,10 +156,10 @@ namespace dat
 			// BC | STAT
 			{
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("BC: %01x%01x", cpu.BC.get_msb(), cpu.BC.get_lsb());
+				ImGui::Text("BC: 0x%02X%02X", (int)cpu.BC.get_msb(), (int)cpu.BC.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("STAT: %01x", mem.STAT().get());
+				ImGui::Text("STAT: 0x%02X", (int)mem.STAT().get());
 			}
 
 			ImGui::TableNextRow();
@@ -167,10 +167,10 @@ namespace dat
 			// DE | LY
 			{
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("DE: %01x%01x", cpu.DE.get_msb(), cpu.DE.get_lsb());
+				ImGui::Text("DE: 0x%02x%02x", (int)cpu.DE.get_msb(), (int)cpu.DE.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("LY: %01x", mem.LY().get());
+				ImGui::Text("LY: 0x%02x", (int)mem.LY().get());
 			}
 
 			ImGui::TableNextRow();
@@ -178,7 +178,7 @@ namespace dat
 			// HL | CNT
 			{
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("HL: %01x%01x", cpu.HL.get_msb(), cpu.HL.get_lsb());
+				ImGui::Text("HL: 0x%02X%02X", (int)cpu.HL.get_msb(), (int)cpu.HL.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("CNT: IMPLEMENT");
@@ -189,10 +189,10 @@ namespace dat
 			// SP | IE
 			{
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("SP: %01x%01x", cpu.SP.get_msb(), cpu.SP.get_lsb());
+				ImGui::Text("SP: 0x%02X%02X", (int)cpu.SP.get_msb(), (int)cpu.SP.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("IE: %01x", mem.IE().get());
+				ImGui::Text("IE: 0x%02X", (int)mem.IE().get());
 			}
 
 			ImGui::TableNextRow();
@@ -200,10 +200,10 @@ namespace dat
 			// PC | IF
 			{
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("PC: %01x%01x", cpu.PC.get_msb(), cpu.PC.get_lsb());
+				ImGui::Text("PC: 0x%02X%02X", (int)cpu.PC.get_msb(), (int)cpu.PC.get_lsb());
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("IF: %01x", mem.IF().get());
+				ImGui::Text("IF: 0x%02X", (int)mem.IF().get());
 			}
 
 			ImGui::TableNextRow();
@@ -211,7 +211,7 @@ namespace dat
 			// IME | SPD
 			{
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("IME: %01x", cpu.get_IME());
+				ImGui::Text("IME: 0x%02X", (int)cpu.get_IME());
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("SPD: IMPLEMENT");
