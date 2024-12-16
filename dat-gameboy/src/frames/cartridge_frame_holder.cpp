@@ -1,7 +1,8 @@
 #include "pch.hpp"
-#include "cartridge_frame_holder.hpp"
-#include "core/cartridge_holder.hpp"
 #include "constants.hpp"
+#include "graphics/graphics_device.hpp"
+#include "core/cartridge_holder.hpp"
+#include "cartridge_frame_holder.hpp"
 
 namespace dat
 {

@@ -79,10 +79,6 @@ namespace
 GameboyTest::GameboyTest()
 {
 	using namespace dat;
-
-	auto opcodes = dat::load_json_file("res/opcodes.json");
-	dat::initialize_instruction_set(opcodes);
-
 	gameboy.load_cartridge(dat::make_shared<s_TestMBC>());
 }
 
@@ -105,8 +101,14 @@ void GameboyTest::run_test(const std::filesystem::path& filepath)
 		--gameboy.cpu.PC;
 		gameboy.cpu.tick();
 
-		for (const auto& [address, _, type] : testEntry.cycles)
-			gameboy.cpu.tick();
+		for (const auto& [address, value, type] : testEntry.cycles)
+		{				
+			if (address == gameboy.cpu.PC.get())
+			{
+				gameboy.cpu.tick();
+				DAT_LOG_INFO("{} [{}] : {} [{}]", value, address, gameboy.memory.read(address), address);
+			}
+		}
 
 		compare_cpu_data(testEntry.finalCondition);
 		++index;
@@ -164,22 +166,22 @@ TEST_P(GameboyTest, RunTest_File)
 }
 
 #define TEST_FILES(prefix)		\
-	"res/v2/" #prefix "0.json",	\
-	"res/v2/" #prefix "1.json",	\
-	"res/v2/" #prefix "2.json",	\
-	"res/v2/" #prefix "3.json",	\
-	"res/v2/" #prefix "4.json",	\
-	"res/v2/" #prefix "5.json",	\
-	"res/v2/" #prefix "6.json",	\
-	"res/v2/" #prefix "7.json",	\
-	"res/v2/" #prefix "8.json", \
-	"res/v2/" #prefix "9.json", \
-	"res/v2/" #prefix "a.json",	\
-	"res/v2/" #prefix "b.json",	\
-	"res/v2/" #prefix "c.json",	\
-	"res/v2/" #prefix "d.json",	\
-	"res/v2/" #prefix "e.json",	\
-	"res/v2/" #prefix "f.json"	\
+	"res/tests/" #prefix "0.json",	\
+	"res/tests/" #prefix "1.json",	\
+	"res/tests/" #prefix "2.json",	\
+	"res/tests/" #prefix "3.json",	\
+	"res/tests/" #prefix "4.json",	\
+	"res/tests/" #prefix "5.json",	\
+	"res/tests/" #prefix "6.json",	\
+	"res/tests/" #prefix "7.json",	\
+	"res/tests/" #prefix "8.json", \
+	"res/tests/" #prefix "9.json", \
+	"res/tests/" #prefix "a.json",	\
+	"res/tests/" #prefix "b.json",	\
+	"res/tests/" #prefix "c.json",	\
+	"res/tests/" #prefix "d.json",	\
+	"res/tests/" #prefix "e.json",	\
+	"res/tests/" #prefix "f.json"	\
 
 INSTANTIATE_TEST_SUITE_P(GameboyFileTests_0X, GameboyTest, ::testing::Values(TEST_FILES(0)));
 INSTANTIATE_TEST_SUITE_P(GameboyFileTests_1X, GameboyTest, ::testing::Values(TEST_FILES(1)));
@@ -194,24 +196,24 @@ INSTANTIATE_TEST_SUITE_P(GameboyFileTests_9X, GameboyTest, ::testing::Values(TES
 INSTANTIATE_TEST_SUITE_P(GameboyFileTests_aX, GameboyTest, ::testing::Values(TEST_FILES(a)));
 INSTANTIATE_TEST_SUITE_P(GameboyFileTests_bX, GameboyTest, ::testing::Values(TEST_FILES(b)));
 
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c0, GameboyTest, ::testing::Values("res/v2/c0.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c1, GameboyTest, ::testing::Values("res/v2/c1.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c2, GameboyTest, ::testing::Values("res/v2/c2.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c3, GameboyTest, ::testing::Values("res/v2/c3.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c4, GameboyTest, ::testing::Values("res/v2/c4.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c5, GameboyTest, ::testing::Values("res/v2/c5.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c6, GameboyTest, ::testing::Values("res/v2/c6.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c7, GameboyTest, ::testing::Values("res/v2/c7.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c8, GameboyTest, ::testing::Values("res/v2/c8.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c9, GameboyTest, ::testing::Values("res/v2/c9.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_ca, GameboyTest, ::testing::Values("res/v2/ca.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_cc, GameboyTest, ::testing::Values("res/v2/cc.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_cd, GameboyTest, ::testing::Values("res/v2/cd.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_ce, GameboyTest, ::testing::Values("res/v2/ce.json"));
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_cf, GameboyTest, ::testing::Values("res/v2/cf.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c0, GameboyTest, ::testing::Values("res/tests/c0.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c1, GameboyTest, ::testing::Values("res/tests/c1.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c2, GameboyTest, ::testing::Values("res/tests/c2.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c3, GameboyTest, ::testing::Values("res/tests/c3.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c4, GameboyTest, ::testing::Values("res/tests/c4.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c5, GameboyTest, ::testing::Values("res/tests/c5.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c6, GameboyTest, ::testing::Values("res/tests/c6.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c7, GameboyTest, ::testing::Values("res/tests/c7.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c8, GameboyTest, ::testing::Values("res/tests/c8.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_c9, GameboyTest, ::testing::Values("res/tests/c9.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_ca, GameboyTest, ::testing::Values("res/tests/ca.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_cc, GameboyTest, ::testing::Values("res/tests/cc.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_cd, GameboyTest, ::testing::Values("res/tests/cd.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_ce, GameboyTest, ::testing::Values("res/tests/ce.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_cf, GameboyTest, ::testing::Values("res/tests/cf.json"));
 
 INSTANTIATE_TEST_SUITE_P(GameboyFileTests_dX, GameboyTest, ::testing::Values(TEST_FILES(d)));
 INSTANTIATE_TEST_SUITE_P(GameboyFileTests_eX, GameboyTest, ::testing::Values(TEST_FILES(e)));
 INSTANTIATE_TEST_SUITE_P(GameboyFileTests_fX, GameboyTest, ::testing::Values(TEST_FILES(f)));
 
-INSTANTIATE_TEST_SUITE_P(GameboyFileTests_PREFIX, GameboyTest, ::testing::Values("res/v2/cb.json"));
+INSTANTIATE_TEST_SUITE_P(GameboyFileTests_PREFIX, GameboyTest, ::testing::Values("res/tests/cb.json"));

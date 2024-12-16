@@ -10,6 +10,11 @@ namespace dat
 		s_Gameboy();
 
 	public:
+		void tick(e_Component components = e_Component::ALL);
+		
+		void tick_all_except_cpu();
+
+	public:
 		void load_bootloader_rom(const std::vector<u8>& data);
 
 		void load_cartridge(const dat_shared<ICartridge>& cartridge);

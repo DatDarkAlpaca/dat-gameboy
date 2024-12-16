@@ -1,8 +1,10 @@
 #pragma once
+#include <gameboy/gameboy.hpp>
+
 #include "constants.hpp"
 #include "image_frame.hpp"
-#include <gameboy/gameboy.hpp>
 #include "events/frame_events.hpp"
+#include "graphics/graphics_device.hpp"
 
 namespace dat
 {
@@ -42,7 +44,7 @@ namespace dat
 			ImGui::End();
 		}
 		
-		void update(const std::array<e_Color, 160 * 144>& data)
+		void update(e_Color* data)
 		{
 			u8 rgbBuffer[160 * 144 * 3] = {};
 			glm::u8vec3 colorWhite = { 255, 255, 255 };
@@ -51,8 +53,10 @@ namespace dat
 			glm::u8vec3 colorBlack = { 000, 000, 000 };
 
 			size_t index = 0;
-			for (const e_Color& color : data)
+			for (u64 i = 0; i < GameboyScreenWidth * GameboyScreenHeight; ++i)
 			{
+				e_Color color = data[i];
+
 				switch (color)
 				{
 					case e_Color::WHITE:

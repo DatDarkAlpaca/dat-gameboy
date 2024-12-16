@@ -1,17 +1,10 @@
 #pragma once
 #include "hardware_register.hpp"
+#include "gameboy/components/ppu/video_mode.hpp"
 
 namespace dat
 {
 	constexpr inline u16 STAT_Address = 0xFF41;
-
-	enum e_VideoMode : u8
-	{
-		HBLANK = 0x0,
-		VBLANK = 0x1,
-		ACCESS_OAM = 0x2,
-		ACCESS_VRAM = 0x3,
-	};
 
 	enum class e_STAT : u8
 	{

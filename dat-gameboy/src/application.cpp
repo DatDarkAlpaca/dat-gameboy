@@ -89,8 +89,8 @@ namespace dat
 		// Disassembler:
 		subscriber.subscribe<DisassemblerStepEvent>([&](const DisassemblerStepEvent&) -> bool {
 			gameboy->cpu.tick();
-			gameboy->ppu.tick(1);
-			gameboy->timer.tick(1);
+			gameboy->ppu.tick();
+			gameboy->timer.tick();
 			return false;
 		});
 
@@ -110,14 +110,11 @@ namespace dat
 		if (!gameboy->isOn())
 			return;
 
-		u32 cpuTicksPerFrame = 17592;
-		for (u32 i = 0; i < cpuTicksPerFrame; ++i) 
-		{
+		gameboy->ppu.reset_screen_refresh();
+
+		while (!gameboy->ppu.is_requesting_screen_refresh())
 			gameboy->cpu.tick();
-			gameboy->timer.tick(1);
-			gameboy->ppu.tick(1);
-		}
-		
+
 		gameboyFrame->update(gameboy->ppu.get_framebuffer());
 	}
 

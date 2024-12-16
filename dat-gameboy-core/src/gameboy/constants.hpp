@@ -26,10 +26,12 @@ namespace dat
 		0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E,
 	};
 
-	constexpr static inline u64 CyclesHBlank	= 204;			// Mode 0
-	constexpr static inline u64 CyclesOAM		= 80;			// Mode 1
-	constexpr static inline u64 CyclesVRAM		= 172;			// Mode 2
-	constexpr static inline u64 CyclesVBlank	= 4560;			// Mode 3
+	constexpr static inline u64 CyclesHBlank_First	= 204;			// Mode 0-0 (ScrollX = 0)
+	constexpr static inline u64 CyclesHBlank_Second	= 200;			// Mode 0-1 (ScrollX : [1, 4])
+	constexpr static inline u64 CyclesHBlank_Third	= 196;			// Mode 0-2 (ScrollX : [5, 7])
+	constexpr static inline u64 CyclesOAM			= 80;			// Mode 1
+	constexpr static inline u64 CyclesVRAM			= 172;			// Mode 2
+	constexpr static inline u64 CyclesVBlank		= 456;			// Mode 3
 
 	constexpr inline u16 OAM_Address = 0xFE00;
 	constexpr inline u16 VRAM_Block0_Address = 0x8000;

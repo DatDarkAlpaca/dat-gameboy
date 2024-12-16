@@ -1,5 +1,6 @@
 #pragma once
 #include <platform/platform.hpp>
+#include <graphics/quad_renderer.hpp>
 
 #include <gameboy/gameboy.hpp>
 #include <gameboy/file.hpp>

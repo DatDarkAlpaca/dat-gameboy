@@ -13,7 +13,7 @@ namespace dat
 	void s_SharpSM83::run_07() { rlca(); }					 							// RLCA
 	void s_SharpSM83::run_08() { load_a16_SP(); }										// LD [a16], SP
 	void s_SharpSM83::run_09() { add(HL.get(), BC.get()); }			 					// ADD HL, BC
-	void s_SharpSM83::run_0A() { load(A, value_at(BC.get())); }							// LD A, [BC]
+	void s_SharpSM83::run_0A() { load(A, read_at(BC.get())); }							// LD A, [BC]
 	void s_SharpSM83::run_0B() { dec(BC.get()); }			 							// DEC BC
 	void s_SharpSM83::run_0C() { inc(BC.get_lsb()); }			 						// INC C
 	void s_SharpSM83::run_0D() { dec(BC.get_lsb()); }			 						// DEC C
@@ -30,7 +30,7 @@ namespace dat
 	void s_SharpSM83::run_17() { rla(); }												// RLA
 	void s_SharpSM83::run_18() { jr(fetch_signed()); }									// JR e8
 	void s_SharpSM83::run_19() { add(HL.get(), DE.get()); }								// ADD HL, DE
-	void s_SharpSM83::run_1A() { load(A, value_at(DE.get())); }							// LD A, [DE]
+	void s_SharpSM83::run_1A() { load(A, read_at(DE.get())); }							// LD A, [DE]
 	void s_SharpSM83::run_1B() { dec(DE.get()); }										// DEC DE
 	void s_SharpSM83::run_1C() { inc(DE.get_lsb()); }									// INC E
 	void s_SharpSM83::run_1D() { dec(DE.get_lsb()); }									// DEC E
@@ -47,7 +47,7 @@ namespace dat
 	void s_SharpSM83::run_27() { daa(); }												// DAA
 	void s_SharpSM83::run_28() { jr(condZ, fetch_signed()); }							// JR Z, e8
 	void s_SharpSM83::run_29() { add(HL.get(), HL.get()); }								// ADD HL, HL
-	void s_SharpSM83::run_2A() { load(A, value_at(HL.get())); HL.get()++; }				// LD A, [HL+]
+	void s_SharpSM83::run_2A() { load(A, read_at(HL.get())); HL.get()++; }				// LD A, [HL+]
 	void s_SharpSM83::run_2B() { dec(HL.get()); }										// DEC HL
 	void s_SharpSM83::run_2C() { inc(HL.get_lsb()); }									// INC L
 	void s_SharpSM83::run_2D() { dec(HL.get_lsb()); }									// DEC L
@@ -64,7 +64,7 @@ namespace dat
 	void s_SharpSM83::run_37() { scf(); }												// SCF
 	void s_SharpSM83::run_38() { jr(condC, fetch_signed()); }							// JR C, e8
 	void s_SharpSM83::run_39() { add(HL.get(), SP.get()); }								// ADD HL, SP
-	void s_SharpSM83::run_3A() { load(A, value_at(HL.get())); HL.get()--; }				// LD A, [HL-]
+	void s_SharpSM83::run_3A() { load(A, read_at(HL.get())); HL.get()--; }				// LD A, [HL-]
 	void s_SharpSM83::run_3B() { dec(SP.get()); }										// DEC SP
 	void s_SharpSM83::run_3C() { inc(A); }												// INC A
 	void s_SharpSM83::run_3D() { dec(A); }												// DEC A
@@ -77,7 +77,7 @@ namespace dat
 	void s_SharpSM83::run_43() { load(BC.get_msb(), DE.get_lsb()); }					// LD B, E
 	void s_SharpSM83::run_44() { load(BC.get_msb(), HL.get_msb()); }					// LD B, H
 	void s_SharpSM83::run_45() { load(BC.get_msb(), HL.get_lsb()); }					// LD B, L
-	void s_SharpSM83::run_46() { load(BC.get_msb(), value_at(HL.get())); }				// LD B, [HL]
+	void s_SharpSM83::run_46() { load(BC.get_msb(), read_at(HL.get())); }				// LD B, [HL]
 	void s_SharpSM83::run_47() { load(BC.get_msb(), A); }								// LD B, A
 	void s_SharpSM83::run_48() { load(BC.get_lsb(), BC.get_msb()); }					// LD C, B
 	void s_SharpSM83::run_49() { load(BC.get_lsb(), BC.get_lsb()); }					// LD C, C
@@ -85,7 +85,7 @@ namespace dat
 	void s_SharpSM83::run_4B() { load(BC.get_lsb(), DE.get_lsb()); }					// LD C, E
 	void s_SharpSM83::run_4C() { load(BC.get_lsb(), HL.get_msb()); }					// LD C, H
 	void s_SharpSM83::run_4D() { load(BC.get_lsb(), HL.get_lsb()); }					// LD C, L
-	void s_SharpSM83::run_4E() { load(BC.get_lsb(), value_at(HL.get())); }				// LD C, [HL]
+	void s_SharpSM83::run_4E() { load(BC.get_lsb(), read_at(HL.get())); }				// LD C, [HL]
 	void s_SharpSM83::run_4F() { load(BC.get_lsb(), A); }								// LD C, A
 
 	void s_SharpSM83::run_50() { load(DE.get_msb(), BC.get_msb()); }					// LD D, B
@@ -94,7 +94,7 @@ namespace dat
 	void s_SharpSM83::run_53() { load(DE.get_msb(), DE.get_lsb()); }					// LD D, E
 	void s_SharpSM83::run_54() { load(DE.get_msb(), HL.get_msb()); }					// LD D, H
 	void s_SharpSM83::run_55() { load(DE.get_msb(), HL.get_lsb()); }					// LD D, L
-	void s_SharpSM83::run_56() { load(DE.get_msb(), value_at(HL.get())); }				// LD D, [HL]
+	void s_SharpSM83::run_56() { load(DE.get_msb(), read_at(HL.get())); }				// LD D, [HL]
 	void s_SharpSM83::run_57() { load(DE.get_msb(), A); }								// LD D, A
 	void s_SharpSM83::run_58() { load(DE.get_lsb(), BC.get_msb()); }					// LD E, B
 	void s_SharpSM83::run_59() { load(DE.get_lsb(), BC.get_lsb()); }					// LD E, C
@@ -102,7 +102,7 @@ namespace dat
 	void s_SharpSM83::run_5B() { load(DE.get_lsb(), DE.get_lsb()); }					// LD E, E
 	void s_SharpSM83::run_5C() { load(DE.get_lsb(), HL.get_msb()); }					// LD E, H
 	void s_SharpSM83::run_5D() { load(DE.get_lsb(), HL.get_lsb()); }					// LD E, L
-	void s_SharpSM83::run_5E() { load(DE.get_lsb(), value_at(HL.get())); }				// LD E, [HL]
+	void s_SharpSM83::run_5E() { load(DE.get_lsb(), read_at(HL.get())); }				// LD E, [HL]
 	void s_SharpSM83::run_5F() { load(DE.get_lsb(), A); }								// LD E, A
 
 	void s_SharpSM83::run_60() { load(HL.get_msb(), BC.get_msb()); }					// LD H, B
@@ -111,7 +111,7 @@ namespace dat
 	void s_SharpSM83::run_63() { load(HL.get_msb(), DE.get_lsb()); }					// LD H, E
 	void s_SharpSM83::run_64() { load(HL.get_msb(), HL.get_msb()); }					// LD H, H
 	void s_SharpSM83::run_65() { load(HL.get_msb(), HL.get_lsb()); }					// LD H, L
-	void s_SharpSM83::run_66() { load(HL.get_msb(), value_at(HL.get())); }				// LD H, [HL]
+	void s_SharpSM83::run_66() { load(HL.get_msb(), read_at(HL.get())); }				// LD H, [HL]
 	void s_SharpSM83::run_67() { load(HL.get_msb(), A); }								// LD H, A
 	void s_SharpSM83::run_68() { load(HL.get_lsb(), BC.get_msb()); }					// LD L, B
 	void s_SharpSM83::run_69() { load(HL.get_lsb(), BC.get_lsb()); }					// LD L, C
@@ -119,7 +119,7 @@ namespace dat
 	void s_SharpSM83::run_6B() { load(HL.get_lsb(), DE.get_lsb()); }					// LD L, E
 	void s_SharpSM83::run_6C() { load(HL.get_lsb(), HL.get_msb()); }					// LD L, H
 	void s_SharpSM83::run_6D() { load(HL.get_lsb(), HL.get_lsb()); }					// LD L, L
-	void s_SharpSM83::run_6E() { load(HL.get_lsb(), value_at(HL.get())); }				// LD L, [HL]
+	void s_SharpSM83::run_6E() { load(HL.get_lsb(), read_at(HL.get())); }				// LD L, [HL]
 	void s_SharpSM83::run_6F() { load(HL.get_lsb(), A); }								// LD L, A
 
 	void s_SharpSM83::run_70() { load_memory(HL.get(), BC.get_msb()); }					// LD [HL], B
@@ -136,7 +136,7 @@ namespace dat
 	void s_SharpSM83::run_7B() { load(A, DE.get_lsb()); }								// LD A, E
 	void s_SharpSM83::run_7C() { load(A, HL.get_msb()); }								// LD A, H
 	void s_SharpSM83::run_7D() { load(A, HL.get_lsb()); }								// LD A, L
-	void s_SharpSM83::run_7E() { load(A, value_at(HL.get())); }							// LD A, [HL]
+	void s_SharpSM83::run_7E() { load(A, read_at(HL.get())); }							// LD A, [HL]
 	void s_SharpSM83::run_7F() { load(A, A); }											// LD A, A
 
 	void s_SharpSM83::run_80() { add(A, BC.get_msb()); }								// ADD A, B
@@ -145,7 +145,7 @@ namespace dat
 	void s_SharpSM83::run_83() { add(A, DE.get_lsb()); }								// ADD A, E
 	void s_SharpSM83::run_84() { add(A, HL.get_msb()); }								// ADD A, H
 	void s_SharpSM83::run_85() { add(A, HL.get_lsb()); }								// ADD A, L
-	void s_SharpSM83::run_86() { add(A, value_at(HL.get())); }							// ADD A, [HL]
+	void s_SharpSM83::run_86() { add(A, read_at(HL.get())); }							// ADD A, [HL]
 	void s_SharpSM83::run_87() { add(A, A); }											// ADD A, A
 	void s_SharpSM83::run_88() { adc(A, BC.get_msb()); }								// ADC A, B
 	void s_SharpSM83::run_89() { adc(A, BC.get_lsb()); }								// ADC A, C
@@ -153,7 +153,7 @@ namespace dat
 	void s_SharpSM83::run_8B() { adc(A, DE.get_lsb()); }								// ADC A, E
 	void s_SharpSM83::run_8C() { adc(A, HL.get_msb()); }								// ADC A, H
 	void s_SharpSM83::run_8D() { adc(A, HL.get_lsb()); }								// ADC A, L
-	void s_SharpSM83::run_8E() { adc(A, value_at(HL.get())); }							// ADC A, [HL]
+	void s_SharpSM83::run_8E() { adc(A, read_at(HL.get())); }							// ADC A, [HL]
 	void s_SharpSM83::run_8F() { adc(A, A); }											// ADC A, A
 
 	void s_SharpSM83::run_90() { sub(A, BC.get_msb()); }								// SUB A, B
@@ -162,7 +162,7 @@ namespace dat
 	void s_SharpSM83::run_93() { sub(A, DE.get_lsb()); }								// SUB A, E
 	void s_SharpSM83::run_94() { sub(A, HL.get_msb()); }								// SUB A, H
 	void s_SharpSM83::run_95() { sub(A, HL.get_lsb()); }								// SUB A, L
-	void s_SharpSM83::run_96() { sub(A, value_at(HL.get())); }							// SUB A, [HL]
+	void s_SharpSM83::run_96() { sub(A, read_at(HL.get())); }							// SUB A, [HL]
 	void s_SharpSM83::run_97() { sub(A, A); }											// SUB A, A
 	void s_SharpSM83::run_98() { sbc(A, BC.get_msb()); }								// SBC A, B
 	void s_SharpSM83::run_99() { sbc(A, BC.get_lsb()); }								// SBC A, C
@@ -170,7 +170,7 @@ namespace dat
 	void s_SharpSM83::run_9B() { sbc(A, DE.get_lsb()); }								// SBC A, E
 	void s_SharpSM83::run_9C() { sbc(A, HL.get_msb()); }								// SBC A, H
 	void s_SharpSM83::run_9D() { sbc(A, HL.get_lsb()); }								// SBC A, L
-	void s_SharpSM83::run_9E() { sbc(A, value_at(HL.get())); }							// SBC A, [HL]
+	void s_SharpSM83::run_9E() { sbc(A, read_at(HL.get())); }							// SBC A, [HL]
 	void s_SharpSM83::run_9F() { sbc(A, A); }											// SBC A, A
 
 	void s_SharpSM83::run_A0() { _and(A, BC.get_msb()); }								// AND A, B
@@ -179,7 +179,7 @@ namespace dat
 	void s_SharpSM83::run_A3() { _and(A, DE.get_lsb()); }								// AND A, E
 	void s_SharpSM83::run_A4() { _and(A, HL.get_msb()); }								// AND A, H
 	void s_SharpSM83::run_A5() { _and(A, HL.get_lsb()); }								// AND A, L
-	void s_SharpSM83::run_A6() { _and(A, value_at(HL.get())); }							// AND A, [HL]
+	void s_SharpSM83::run_A6() { _and(A, read_at(HL.get())); }							// AND A, [HL]
 	void s_SharpSM83::run_A7() { _and(A, A); }											// AND A, A
 	void s_SharpSM83::run_A8() { _xor(A, BC.get_msb()); }								// XOR A, B
 	void s_SharpSM83::run_A9() { _xor(A, BC.get_lsb()); }								// XOR A, C
@@ -187,7 +187,7 @@ namespace dat
 	void s_SharpSM83::run_AB() { _xor(A, DE.get_lsb()); }								// XOR A, E
 	void s_SharpSM83::run_AC() { _xor(A, HL.get_msb()); }								// XOR A, H
 	void s_SharpSM83::run_AD() { _xor(A, HL.get_lsb()); }								// XOR A, L
-	void s_SharpSM83::run_AE() { _xor(A, value_at(HL.get())); }							// XOR A, [HL]
+	void s_SharpSM83::run_AE() { _xor(A, read_at(HL.get())); }							// XOR A, [HL]
 	void s_SharpSM83::run_AF() { _xor(A, A); }											// XOR A, A
 
 	void s_SharpSM83::run_B0() { _or(A, BC.get_msb()); }								// OR A, B
@@ -196,7 +196,7 @@ namespace dat
 	void s_SharpSM83::run_B3() { _or(A, DE.get_lsb()); }								// OR A, E
 	void s_SharpSM83::run_B4() { _or(A, HL.get_msb()); }								// OR A, H
 	void s_SharpSM83::run_B5() { _or(A, HL.get_lsb()); }								// OR A, L
-	void s_SharpSM83::run_B6() { _or(A, value_at(HL.get())); }							// OR A, [HL]
+	void s_SharpSM83::run_B6() { _or(A, read_at(HL.get())); }							// OR A, [HL]
 	void s_SharpSM83::run_B7() { _or(A, A); }											// OR A, A
 	void s_SharpSM83::run_B8() { cp(BC.get_msb()); }									// CP A, B
 	void s_SharpSM83::run_B9() { cp(BC.get_lsb()); }									// CP A, C
@@ -204,7 +204,7 @@ namespace dat
 	void s_SharpSM83::run_BB() { cp(DE.get_lsb()); }									// CP A, E
 	void s_SharpSM83::run_BC() { cp(HL.get_msb()); }									// CP A, H
 	void s_SharpSM83::run_BD() { cp(HL.get_lsb()); }									// CP A, L
-	void s_SharpSM83::run_BE() { cp(value_at(HL.get())); }								// CP A, [HL]
+	void s_SharpSM83::run_BE() { cp(read_at(HL.get())); }								// CP A, [HL]
 	void s_SharpSM83::run_BF() { cp(A); }												// CP A, A
 
 	void s_SharpSM83::run_C0() { ret(condNZ); }											// RET NZ
@@ -249,7 +249,7 @@ namespace dat
 	void s_SharpSM83::run_E5() { push(HL); }											// PUSH HL
 	void s_SharpSM83::run_E6() { _and(A, fetch_byte()); }								// AND A, n8
 	void s_SharpSM83::run_E7() { rst(0x20); }											// RST $20
-	void s_SharpSM83::run_E8() { add(SP.get(), fetch_signed()); }						// ADD SP, e8
+	void s_SharpSM83::run_E8() { add_sp_e8(); }											// ADD SP, e8
 	void s_SharpSM83::run_E9() { jp(HL.get()); }										// JP HL
 	void s_SharpSM83::run_EA() { load_memory(fetch_word(), A); }						// LD [a16], A
 	void s_SharpSM83::run_EB() { illegal("0xEB"); }										// —	
@@ -263,12 +263,12 @@ namespace dat
 	void s_SharpSM83::run_F2() { ldh_A_C(); }											// LD A, [C]
 	void s_SharpSM83::run_F3() { di(); }												// DI
 	void s_SharpSM83::run_F4() { illegal("0xF4"); }										// —
-	void s_SharpSM83::run_F5() { push_byte(A); push_byte(F.get_register()); }			// PUSH AF
+	void s_SharpSM83::run_F5() { push_af(); }											// PUSH AF
 	void s_SharpSM83::run_F6() { _or(A, fetch_byte()); }								// OR A, n8
 	void s_SharpSM83::run_F7() { rst(0x30); }											// RST $30
 	void s_SharpSM83::run_F8() { load_HL_SPe8(); }										// LD HL, SP + e8
-	void s_SharpSM83::run_F9() { load(SP.get(), HL.get()); }							// LD SP, HL
-	void s_SharpSM83::run_FA() { load(A, value_at(fetch_word())); }						// LD A, [a16]
+	void s_SharpSM83::run_F9() { ld_sp_hl(); }											// LD SP, HL
+	void s_SharpSM83::run_FA() { load(A, read_at(fetch_word())); }						// LD A, [a16]
 	void s_SharpSM83::run_FB() { ei(); }												// EI
 	void s_SharpSM83::run_FC() { illegal("0xFC"); }										// —	
 	void s_SharpSM83::run_FD() { illegal("0xFD"); }										// —	
@@ -352,7 +352,7 @@ namespace dat
 	void s_SharpSM83::run_cb_43() { bit(DE.get_lsb(), 0); }								// BIT 0, E
 	void s_SharpSM83::run_cb_44() { bit(HL.get_msb(), 0); }								// BIT 0, H
 	void s_SharpSM83::run_cb_45() { bit(HL.get_lsb(), 0); }								// BIT 0, L
-	void s_SharpSM83::run_cb_46() { bit(value_at(HL.get()), 0); }						// BIT 0, [HL]
+	void s_SharpSM83::run_cb_46() { bit(read_at(HL.get()), 0); }						// BIT 0, [HL]
 	void s_SharpSM83::run_cb_47() { bit(A, 0); }										// BIT 0, A
 	void s_SharpSM83::run_cb_48() { bit(BC.get_msb(), 1); }								// BIT 1, B
 	void s_SharpSM83::run_cb_49() { bit(BC.get_lsb(), 1); }								// BIT 1, C
@@ -360,7 +360,7 @@ namespace dat
 	void s_SharpSM83::run_cb_4B() { bit(DE.get_lsb(), 1); }								// BIT 1, E
 	void s_SharpSM83::run_cb_4C() { bit(HL.get_msb(), 1); }								// BIT 1, H
 	void s_SharpSM83::run_cb_4D() { bit(HL.get_lsb(), 1); }								// BIT 1, L
-	void s_SharpSM83::run_cb_4E() { bit(value_at(HL.get()), 1); }						// BIT 1, [HL]
+	void s_SharpSM83::run_cb_4E() { bit(read_at(HL.get()), 1); }						// BIT 1, [HL]
 	void s_SharpSM83::run_cb_4F() { bit(A, 1); }										// BIT 1, A
 
 	void s_SharpSM83::run_cb_50() { bit(BC.get_msb(), 2); }								// BIT 2, B
@@ -369,7 +369,7 @@ namespace dat
 	void s_SharpSM83::run_cb_53() { bit(DE.get_lsb(), 2); }								// BIT 2, E
 	void s_SharpSM83::run_cb_54() { bit(HL.get_msb(), 2); }								// BIT 2, H
 	void s_SharpSM83::run_cb_55() { bit(HL.get_lsb(), 2); }								// BIT 2, L
-	void s_SharpSM83::run_cb_56() { bit(value_at(HL.get()), 2); }						// BIT 2, [HL]
+	void s_SharpSM83::run_cb_56() { bit(read_at(HL.get()), 2); }						// BIT 2, [HL]
 	void s_SharpSM83::run_cb_57() { bit(A, 2); }										// BIT 2, A
 	void s_SharpSM83::run_cb_58() { bit(BC.get_msb(), 3); }								// BIT 3, B
 	void s_SharpSM83::run_cb_59() { bit(BC.get_lsb(), 3); }								// BIT 3, C
@@ -377,7 +377,7 @@ namespace dat
 	void s_SharpSM83::run_cb_5B() { bit(DE.get_lsb(), 3); }								// BIT 3, E
 	void s_SharpSM83::run_cb_5C() { bit(HL.get_msb(), 3); }								// BIT 3, H
 	void s_SharpSM83::run_cb_5D() { bit(HL.get_lsb(), 3); }								// BIT 3, L
-	void s_SharpSM83::run_cb_5E() { bit(value_at(HL.get()), 3); }						// BIT 3, [HL]
+	void s_SharpSM83::run_cb_5E() { bit(read_at(HL.get()), 3); }						// BIT 3, [HL]
 	void s_SharpSM83::run_cb_5F() { bit(A, 3); }										// BIT 3, A
 
 	void s_SharpSM83::run_cb_60() { bit(BC.get_msb(), 4); }								// BIT 4, B
@@ -386,7 +386,7 @@ namespace dat
 	void s_SharpSM83::run_cb_63() { bit(DE.get_lsb(), 4); }								// BIT 4, E
 	void s_SharpSM83::run_cb_64() { bit(HL.get_msb(), 4); }								// BIT 4, H
 	void s_SharpSM83::run_cb_65() { bit(HL.get_lsb(), 4); }								// BIT 4, L
-	void s_SharpSM83::run_cb_66() { bit(value_at(HL.get()), 4); }						// BIT 4, [HL]
+	void s_SharpSM83::run_cb_66() { bit(read_at(HL.get()), 4); }						// BIT 4, [HL]
 	void s_SharpSM83::run_cb_67() { bit(A, 4); }										// BIT 4, A
 	void s_SharpSM83::run_cb_68() { bit(BC.get_msb(), 5); }								// BIT 5, B
 	void s_SharpSM83::run_cb_69() { bit(BC.get_lsb(), 5); }								// BIT 5, C
@@ -394,7 +394,7 @@ namespace dat
 	void s_SharpSM83::run_cb_6B() { bit(DE.get_lsb(), 5); }								// BIT 5, E
 	void s_SharpSM83::run_cb_6C() { bit(HL.get_msb(), 5); }								// BIT 5, H
 	void s_SharpSM83::run_cb_6D() { bit(HL.get_lsb(), 5); }								// BIT 5, L
-	void s_SharpSM83::run_cb_6E() { bit(value_at(HL.get()), 5); }						// BIT 5, [HL]
+	void s_SharpSM83::run_cb_6E() { bit(read_at(HL.get()), 5); }						// BIT 5, [HL]
 	void s_SharpSM83::run_cb_6F() { bit(A, 5); }										// BIT 5, A
 
 	void s_SharpSM83::run_cb_70() { bit(BC.get_msb(), 6); }								// BIT 6, B
@@ -403,7 +403,7 @@ namespace dat
 	void s_SharpSM83::run_cb_73() { bit(DE.get_lsb(), 6); }								// BIT 6, E
 	void s_SharpSM83::run_cb_74() { bit(HL.get_msb(), 6); }								// BIT 6, H
 	void s_SharpSM83::run_cb_75() { bit(HL.get_lsb(), 6); }								// BIT 6, L
-	void s_SharpSM83::run_cb_76() { bit(value_at(HL.get()), 6); }						// BIT 6, [HL]
+	void s_SharpSM83::run_cb_76() { bit(read_at(HL.get()), 6); }						// BIT 6, [HL]
 	void s_SharpSM83::run_cb_77() { bit(A, 6); }										// BIT 6, A
 	void s_SharpSM83::run_cb_78() { bit(BC.get_msb(), 7); }								// BIT 7, B
 	void s_SharpSM83::run_cb_79() { bit(BC.get_lsb(), 7); }								// BIT 7, C
@@ -411,7 +411,7 @@ namespace dat
 	void s_SharpSM83::run_cb_7B() { bit(DE.get_lsb(), 7); }								// BIT 7, E
 	void s_SharpSM83::run_cb_7C() { bit(HL.get_msb(), 7); }								// BIT 7, H
 	void s_SharpSM83::run_cb_7D() { bit(HL.get_lsb(), 7); }								// BIT 7, L
-	void s_SharpSM83::run_cb_7E() { bit(value_at(HL.get()), 7); }						// BIT 7, [HL]
+	void s_SharpSM83::run_cb_7E() { bit(read_at(HL.get()), 7); }						// BIT 7, [HL]
 	void s_SharpSM83::run_cb_7F() { bit(A, 7); }										// BIT 7, A
 
 	void s_SharpSM83::run_cb_80() { res(BC.get_msb(), 0); }								// RES 0, B

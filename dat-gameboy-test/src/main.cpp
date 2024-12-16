@@ -10,7 +10,11 @@
 int main(int argc, char** argv)
 {
 	dat::initialize_logger();
-	// testing::InitGoogleTest(&argc, argv);
+	testing::InitGoogleTest(&argc, argv);
+
+	::testing::GTEST_FLAG(filter) = "GameboyFileTests_0X*";
+
+	return RUN_ALL_TESTS(); 
 
 	dat::s_Gameboy gameboy;
 	gameboy.load_bootloader_rom(dat::read_ROM("res/roms/DMG_ROM.gb"));
@@ -50,8 +54,8 @@ int main(int argc, char** argv)
 		file << KLKL << (int)gameboy.memory.read(gameboy.cpu.PC.get() + 3) << '\n';
 
 		gameboy.cpu.tick();
-		gameboy.timer.tick(1);
-		gameboy.ppu.tick(1);
+		gameboy.timer.tick();
+		gameboy.ppu.tick();
 	}
 	
 	return 0;

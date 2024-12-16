@@ -18,22 +18,35 @@
 
 namespace dat
 {
+	enum class e_SharpMode
+	{
+		STANDARD,
+		HALTED,
+		STOPPED,
+		HALT_BUG,
+		HALT_DI,
+		IME_ENABLED
+	};
+
 	struct s_SharpSM83
 	{
 	public:
 		s_SharpSM83();
 
 	public:
-		void initialize(s_MMU* memory);
+		void initialize(s_Gameboy* gameboy, s_MMU* memory);
 
 		void tick();
 		
 		void restart();
 
 	private:
-		void execute_interrupts();
+		void tick_components();
 
-		bool handle_interrupt(u8 interrupt, u16 source, u8 interruptsEnabled);
+	private:
+		bool interrupts_requested() const;
+
+		void execute_interrupts();
 
 		void execute_instruction();
 
@@ -42,7 +55,7 @@ namespace dat
 	private:
 		void write_to(u16 reg, u8 value);
 
-		u8 value_at(u16 reg);
+		u8 read_at(u16 reg);
 
 		u8 fetch_byte();
 
@@ -67,59 +80,20 @@ namespace dat
 	private:
 		using condition = std::function<bool()>;
 
-		condition condNZ = [&]() -> bool {
-			bool result = !F.Z;
-
-			if (!result)
-				m_MCyclesRequired = m_Instruction.tStatesFalse / TCyclesPerMCycle;
-			else
-				m_MCyclesRequired = m_Instruction.tStates / TCyclesPerMCycle;
-
-			return result;
-		};
-		condition condZ = [&]() -> bool {
-			bool result = F.Z;
-
-			if (!result)
-				m_MCyclesRequired = m_Instruction.tStatesFalse / TCyclesPerMCycle;
-			else
-				m_MCyclesRequired = m_Instruction.tStates / TCyclesPerMCycle;
-
-			return result;
-		};
-		condition condNC = [&]() -> bool {
-			bool result = !F.C;
-
-			if (!result)
-				m_MCyclesRequired = m_Instruction.tStatesFalse / TCyclesPerMCycle;
-			else
-				m_MCyclesRequired = m_Instruction.tStates / TCyclesPerMCycle;
-
-			return result;
-		};
-		condition condC = [&]() -> bool {
-			bool result = F.C;
-
-			if (!result)
-				m_MCyclesRequired = m_Instruction.tStatesFalse / TCyclesPerMCycle;
-			else
-				m_MCyclesRequired = m_Instruction.tStates / TCyclesPerMCycle;
-
-			return result;
-		};
+		condition condNZ = [&]() -> bool { return !F.Z; };
+		condition condZ  = [&]() -> bool { return  F.Z; };
+		condition condNC = [&]() -> bool { return !F.C; };
+		condition condC  = [&]() -> bool { return  F.C; };
 
 	private:
+		s_Gameboy* r_Gameboy = nullptr;
 		s_MMU* r_Memory = nullptr;
 
 	private:
+		e_SharpMode m_CurrentMode = e_SharpMode::STANDARD;
 		s_Instruction m_Instruction;
 
-		u8 m_MCyclesRequired = 0;
-		bool m_isFirstFetch = true;
-		bool m_isInstructionActive = false;
 		bool m_isPrefixActive = false;
-
-		bool m_isHalted = false;
 		bool m_IME = false;
 
 	private:
@@ -134,7 +108,7 @@ namespace dat
 
 		inline void ldh_A_C()
 		{
-			A = value_at(0xFF00 + BC.get_lsb());
+			A = read_at(0xFF00 + BC.get_lsb());
 		}
 
 		inline void ldh_C_A()
@@ -149,15 +123,15 @@ namespace dat
 
 		inline void ldh_A_addr_a8()
 		{
-			A = value_at(0xFF00 + fetch_byte());
+			A = read_at(0xFF00 + fetch_byte());
 		}
 
 		inline void pop_af()
 		{
-			u8 lsb = value_at(SP.get());
+			u8 lsb = read_at(SP.get());
 			++SP;
 
-			u8 msb = value_at(SP.get());
+			u8 msb = read_at(SP.get());
 			++SP;
 
 			A = msb;
@@ -177,6 +151,26 @@ namespace dat
 			F.C = ((originalTarget ^ value ^ (result & 0xFFFF)) & 0x100) == 0x100;
 
 			HL.set(static_cast<u16>(result));
+			tick_components();
+		}
+
+		inline void push_af()
+		{
+			push_byte(A); 
+			push_byte(F.get_register());
+			tick_components();
+		}
+
+		inline void add_sp_e8()
+		{
+			add(SP.get(), fetch_signed());
+			tick_components();
+		}
+
+		inline void ld_sp_hl()
+		{
+			load(SP.get(), HL.get());
+			tick_components();
 		}
 
 	private:

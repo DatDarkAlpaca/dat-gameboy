@@ -172,7 +172,7 @@
     <ClInclude Include="src\gameboy\components\memory.hpp">
       <Filter>gameboy\components</Filter>
     </ClInclude>
-    <ClInclude Include="src\gameboy\components\ppu.hpp">
+    <ClInclude Include="src\gameboy\components\ppu\ppu.hpp">
       <Filter>gameboy\components</Filter>
     </ClInclude>
     <ClInclude Include="src\gameboy\components\registers\bank.hpp">
@@ -302,6 +302,8 @@
     <ClInclude Include="src\utils\string.hpp">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\gameboy\components\ppu\video_mode.hpp" />
+    <ClInclude Include="src\gameboy\components\ppu\sprite.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\core\assets\texture_library.cpp">
@@ -338,5 +340,6 @@
     <ClCompile Include="src\platform\glfw\window\window_glfw.cpp">
       <Filter>platform\glfw\window</Filter>
     </ClCompile>
+    <ClCompile Include="src\gameboy\components\ppu\ppu.cpp" />
   </ItemGroup>
 </Project>

@@ -11,9 +11,34 @@ namespace dat
 {
 	s_Gameboy::s_Gameboy()
 	{
-		cpu.initialize(&memory);
+		cpu.initialize(this, &memory);
+		memory.initialize(this);
 		ppu.initialize(&memory);
 		timer.initialize(&memory.DIV(), &memory.TAC(), &memory.TIMA(), &memory.TMA(), &memory.IF());
+	}
+
+	void s_Gameboy::tick(e_Component callerComponent)
+	{
+		for (u8 i = 0; i < 4; ++i)
+		{
+			if (callerComponent & e_Component::CPU)
+				cpu.tick();
+
+			if (callerComponent & e_Component::PPU)
+				ppu.tick();
+
+			if (callerComponent & e_Component::TIMER)
+				timer.tick();
+		}
+	}
+
+	void s_Gameboy::tick_all_except_cpu()
+	{
+		for (u8 i = 0; i < 4; ++i)
+		{
+			ppu.tick();	
+			timer.tick();
+		}
 	}
 
 	void s_Gameboy::load_bootloader_rom(const std::vector<u8>& data)

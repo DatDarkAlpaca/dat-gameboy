@@ -51,9 +51,9 @@ namespace dat
 		s_LY&  LY()  { return m_LY;  }
 		s_LYC& LYC() { return m_LYC; }
 
-		s_BGP&  BGP()  { return m_BGP; }
-		s_OBP0& OBP0() { return m_OBP0; }
-		s_OBP1& OBP1() { return m_OBP1; }
+		s_BGP& BGP();
+		s_OBP0& OBP0();
+		s_OBP1& OBP1();
 
 		s_BANK& BANK() { return m_BANK; }
 
@@ -80,9 +80,6 @@ namespace dat
 		inline u8* get_memory() const { return memory; }
 
 	private:
-		void tick_components();
-
-	private:
 		s_JOYP m_Joypad;
 		s_SB m_SB;
 		s_SC m_SC;
@@ -101,6 +98,8 @@ namespace dat
 		s_LY m_LY;
 		s_LYC m_LYC;
 
+		s_PaletteRegister m_UnloadedPalette;
+		u8 m_UnloadedData = 0xFF;
 		s_BGP m_BGP;
 		s_OBP0 m_OBP0;
 		s_OBP1 m_OBP1;

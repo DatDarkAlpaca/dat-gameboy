@@ -3,6 +3,7 @@
 #include "interrupt_sources.hpp"
 
 #include "utils/byte_utils.hpp"
+#include "gameboy/gameboy.hpp"
 #include "gameboy/components/memory.hpp"
 #include "gameboy/instruction/instruction_set.hpp"
 
@@ -49,63 +50,88 @@ namespace dat
 		restart();
 	}
 
-	void s_SharpSM83::initialize(s_MMU* memory)
+	void s_SharpSM83::initialize(s_Gameboy* gameboy, s_MMU* memory)
 	{
+		r_Gameboy = gameboy;
 		r_Memory = memory;
 	}
 
 	void s_SharpSM83::tick()
 	{
-#ifdef DAT_LOG_CPU
-		DAT_LOG_DEBUG("TICK");
-#endif
+		bool interruptRequested = false;
 
-		execute_interrupts();
-
-		if (m_isHalted)
-			return;
-
-		if (m_isFirstFetch)
+		switch (m_CurrentMode)
 		{
-			m_Instruction = fetch_instruction();
-			m_MCyclesRequired = m_Instruction.tStates / TCyclesPerMCycle;
-			m_isFirstFetch = false;
-			return;
+			case e_SharpMode::STANDARD:
+			{
+				if (m_Instruction.bytes == 0)
+				{
+					m_Instruction = fetch_instruction();
+					return;
+				}
+
+				if (m_isPrefixActive)
+					execute_cb_instruction();
+				else
+					execute_instruction();
+
+				m_Instruction = fetch_instruction();
+
+				interruptRequested = m_IME && interrupts_requested();
+			} break;
+
+			case e_SharpMode::HALTED:
+			case e_SharpMode::STOPPED:
+			{
+				tick_components();
+				interruptRequested = interrupts_requested();
+			} break;
+
+			case e_SharpMode::HALT_DI:
+			{
+				tick_components();
+				if (interrupts_requested())
+					m_CurrentMode = e_SharpMode::STANDARD;
+			} break;
+
+			case e_SharpMode::HALT_BUG:
+			{
+				m_Instruction = fetch_instruction();
+				--PC;
+
+				if (m_isPrefixActive)
+					execute_cb_instruction();
+				else
+					execute_instruction();
+
+				m_CurrentMode = e_SharpMode::STANDARD;
+				interruptRequested = m_IME && interrupts_requested();
+			} break;
+
+			case e_SharpMode::IME_ENABLED:
+			{
+				m_IME = true;
+				interruptRequested = m_IME && interrupts_requested();
+
+				m_CurrentMode = e_SharpMode::STANDARD;
+				m_Instruction = fetch_instruction();
+
+				if (m_isPrefixActive)
+					execute_cb_instruction();
+				else
+					execute_instruction();
+			} break;
 		}
 
-		if (!m_isInstructionActive)
-		{
-			if (!m_isPrefixActive)
-				execute_instruction();
-			else
-				execute_cb_instruction();
-
-			m_isInstructionActive = true;
-		}
-
-#ifdef DAT_LOG_CPU
-		else
-			DAT_LOG_DEBUG("    C: {}x | WAIT", m_MCyclesRequired);
-#endif
-
-		--m_MCyclesRequired;
-
-		if (m_MCyclesRequired == 0)
-		{
-			m_Instruction = fetch_instruction();
-			m_MCyclesRequired = m_Instruction.tStates / 4;
-			m_isInstructionActive = false;
-		}
+		if (interruptRequested)
+			execute_interrupts();
 	}
 
 	void s_SharpSM83::restart()
 	{
-		m_MCyclesRequired = 0;
-		m_isFirstFetch = true;
-		m_isInstructionActive = false;
 		m_isPrefixActive = false;
 
-		m_isHalted = false;
+		m_CurrentMode = e_SharpMode::STANDARD;
 		m_IME = false;
 
 		A = 0;
@@ -119,46 +145,66 @@ namespace dat
 		m_Instruction = {};
 	}
 
+	void s_SharpSM83::tick_components()
+	{
+		r_Gameboy->tick_all_except_cpu();
+	}
+
+	bool s_SharpSM83::interrupts_requested() const
+	{
+		return r_Memory->IE().get() & r_Memory->IF().get() & 0x1F;
+	}
+
 	void s_SharpSM83::execute_interrupts()
 	{
 		if (!m_IME)
+		{
+			m_CurrentMode = e_SharpMode::STANDARD;
 			return;
+		}
 
-		u8 interrupts = r_Memory->IF().get() & r_Memory->IE().get();
-		if (!interrupts)
-			return;
+		u8 interruptEnable = r_Memory->IE().get();
+		u8 interruptFlags = r_Memory->IF().get();
+		u8 interruptsRequested = interruptEnable & interruptFlags;
 
-		if (m_isHalted && interrupts != 0x0)
-			m_isHalted = false;
-	
-		m_IME = false;
+		u16 vector = 0x00;
+
+		if (check_bit(interruptsRequested, 0))
+		{
+			interruptFlags &= ~bit_value(interruptsRequested, 0);
+			vector = interrupt::VBlank;
+		}
+		else if (check_bit(interruptsRequested, 1))
+		{
+			interruptFlags &= ~bit_value(interruptsRequested, 1);
+			vector = interrupt::LCDCStatus;
+		}
+		else if (check_bit(interruptsRequested, 2))
+		{
+			interruptFlags &= ~bit_value(interruptsRequested, 2);
+			vector = interrupt::Timer;
+		}
+		else if (check_bit(interruptsRequested, 3))
+		{
+			interruptFlags &= ~bit_value(interruptsRequested, 3);
+			vector = interrupt::Serial;
+		}
+		else if (check_bit(interruptsRequested, 4))
+		{
+			interruptFlags &= ~bit_value(interruptsRequested, 4);
+			vector = interrupt::Joypad;
+		}
+
+		r_Memory->IF().write(interruptFlags);
+
 		push(PC);
+		PC.set(vector);
 
-		if (handle_interrupt(0, interrupt::VBlank, interrupts))
-			return;
+		m_IME = false;
 
-		if (handle_interrupt(1, interrupt::LCDCStatus, interrupts))
-			return;
-
-		if (handle_interrupt(2, interrupt::Timer, interrupts))
-			return;
-
-		if (handle_interrupt(3, interrupt::Serial, interrupts))
-			return;
-
-		if (handle_interrupt(4, interrupt::Joypad, interrupts))
-			return;
-	}
-
-	bool s_SharpSM83::handle_interrupt(u8 interrupt, u16 source, u8 interruptsEnabled)
-	{
-		if (!check_bit(interruptsEnabled, interrupt))
-			return false;
-
-		r_Memory->IF().set(interrupt, false);
-		PC.set(source);
-
-		return true;
+		tick_components();
+		tick_components();
+		tick_components();	
 	}
 
 	void s_SharpSM83::execute_instruction()
@@ -219,17 +265,19 @@ namespace dat
 
 	void s_SharpSM83::write_to(u16 reg, u8 value)
 	{
+		tick_components();
 		r_Memory->write(reg, value);
 	}
 
-	u8 s_SharpSM83::value_at(u16 reg)
+	u8 s_SharpSM83::read_at(u16 reg)
 	{
+		tick_components();
 		return r_Memory->read(reg);
 	}
 
 	u8 s_SharpSM83::fetch_byte()
 	{
-		u8 byte = value_at(PC.get());
+		u8 byte = read_at(PC.get());
 		++PC;
 		return byte;
 	}
@@ -248,11 +296,7 @@ namespace dat
 	}
 
 	s_Instruction s_SharpSM83::fetch_instruction()
-	{
-#ifdef DAT_LOG_CPU
-		DAT_LOG_DEBUG("    C: {}x | FETCH", m_MCyclesRequired);
-#endif
-		
+	{		
 		u8 opcode = fetch_byte();
 		return get_instruction_from_opcode(opcode, m_isPrefixActive);
 	}
@@ -267,12 +311,20 @@ namespace dat
 
 	void s_SharpSM83::stop()
 	{
-		m_isHalted = true;
+		m_CurrentMode = e_SharpMode::STOPPED;
 	}
 
 	void s_SharpSM83::halt()
 	{
-		m_isHalted = true;
+		if (m_IME)
+			m_CurrentMode = e_SharpMode::HALTED;
+		else
+		{
+			if (r_Memory->IE().get() & r_Memory->IF().get() & 0x1F)
+				m_CurrentMode = e_SharpMode::HALT_BUG;
+			else
+				m_CurrentMode = e_SharpMode::HALT_DI;
+		}
 	}
 
 	void s_SharpSM83::di()
@@ -282,7 +334,7 @@ namespace dat
 
 	void s_SharpSM83::ei()
 	{
-		m_IME = true;
+		m_CurrentMode = e_SharpMode::IME_ENABLED;
 	}
 
 	void s_SharpSM83::load(u8& target, u8 value)
@@ -297,7 +349,7 @@ namespace dat
 
 	void s_SharpSM83::load_memory(u16 address, u8 value)
 	{
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::add(u16& target, u16 value)
@@ -308,6 +360,8 @@ namespace dat
 		F.N = 0;
 		F.H = check_half_overflow_16(originalTarget, value);
 		F.C = check_overflow_16(originalTarget, value);
+
+		tick_components();
 	}
 
 	void s_SharpSM83::add(u16& target, i8 value)
@@ -321,6 +375,8 @@ namespace dat
 		F.C = (((originalTarget ^ value ^ (result & 0xFFFF)) & 0x100) == 0x100);
 
 		target = result;
+
+		tick_components();
 	}
 
 	void s_SharpSM83::add(u8& target, u8 value)
@@ -332,6 +388,8 @@ namespace dat
 		F.N = 0;
 		F.H = check_half_overflow(originalTarget, value);
 		F.C = check_overflow(originalTarget + value);
+
+		tick_components();
 	}
 
 	void s_SharpSM83::adc(u8& target, u8 value)
@@ -379,18 +437,21 @@ namespace dat
 		F.Z = (target == 0);
 		F.N = 0;
 		F.H = check_half_overflow(originalTarget, 1);
+
+		tick_components();
 	}
 
 	void s_SharpSM83::inc(u16& target)
 	{
+		tick_components();
 		++target;
 	}
 
 	void s_SharpSM83::inc_memory(u16 address)
 	{
-		u8 value = r_Memory->read(address);
+		u8 value = read_at(address);
 		inc(value);
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::dec(u8& target)
@@ -401,18 +462,21 @@ namespace dat
 		F.Z = (target == 0);
 		F.N = 1;
 		F.H = (target & 0x0F) == 0x0F;
+
+		tick_components();
 	}
 
 	void s_SharpSM83::dec(u16& target)
 	{
 		--target;
+		tick_components();
 	}
 
 	void s_SharpSM83::dec_memory(u16 address)
 	{
-		u8 value = r_Memory->read(address);
+		u8 value = read_at(address);
 		dec(value);
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::_and(u8& target, u8 value)
@@ -540,23 +604,29 @@ namespace dat
 
 	void s_SharpSM83::jp(const condition& condition, u16 address)
 	{
-		if (condition())
-			jp(address);
+		if (!condition())
+			return;
+		
+		jp(address);
 	}
 
 	void s_SharpSM83::jp(u16 address)
 	{
+		tick_components();
 		PC.set(address);
 	}
 
 	void s_SharpSM83::jr(const condition& condition, i8 offset)
 	{
-		if (condition())
-			jr(offset);
+		if (!condition())
+			return;
+		
+		jr(offset);
 	}
 
 	void s_SharpSM83::jr(i8 offset)
 	{
+		tick_components();
 		PC += offset;
 	}
 
@@ -566,6 +636,8 @@ namespace dat
 		write_to(SP.get(), data.get_msb());
 		--SP;
 		write_to(SP.get(), data.get_lsb());
+
+		tick_components();
 	}
 
 	void s_SharpSM83::push_byte(u8 data)
@@ -576,10 +648,10 @@ namespace dat
 
 	void s_SharpSM83::pop(s_WordRegister& target)
 	{
-		u8 lsb = value_at(SP.get());
+		u8 lsb = read_at(SP.get());
 		++SP;
 
-		u8 msb = value_at(SP.get());
+		u8 msb = read_at(SP.get());
 		++SP;
 
 		target.set_lsb(lsb);
@@ -599,9 +671,9 @@ namespace dat
 
 	void s_SharpSM83::rlc_memory(u16 address)
 	{
-		u8 value = r_Memory->read(address);
+		u8 value = read_at(address);
 		rlc(value);
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::rrc(u8& target)
@@ -619,9 +691,9 @@ namespace dat
 
 	void s_SharpSM83::rrc_memory(u16 address)
 	{
-		u8 value = r_Memory->read(address);
+		u8 value = read_at(address);
 		rrc(value);
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::rl(u8& target)
@@ -637,9 +709,9 @@ namespace dat
 
 	void s_SharpSM83::rl_memory(u16 address)
 	{
-		u8 value = r_Memory->read(address);
+		u8 value = read_at(address);
 		rl(value);
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::rr(u8& target)
@@ -655,9 +727,9 @@ namespace dat
 
 	void s_SharpSM83::rr_memory(u16 address)
 	{
-		u8 value = r_Memory->read(address);
+		u8 value = read_at(address);
 		rr(value);
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::sla(u8& target)
@@ -673,9 +745,9 @@ namespace dat
 
 	void s_SharpSM83::sla_memory(u16 address)
 	{
-		u8 value = r_Memory->read(address);
+		u8 value = read_at(address);
 		sla(value);
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::sra(u8& target)
@@ -694,9 +766,9 @@ namespace dat
 
 	void s_SharpSM83::sra_memory(u16 address)
 	{
-		u8 value = r_Memory->read(address);
+		u8 value = read_at(address);
 		sra(value);
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::swap(u8& target)
@@ -711,9 +783,9 @@ namespace dat
 
 	void s_SharpSM83::swap_memory(u16 address)
 	{
-		u8 value = r_Memory->read(address);
+		u8 value = read_at(address);
 		swap(value);
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::srl(u8& target)
@@ -729,9 +801,9 @@ namespace dat
 
 	void s_SharpSM83::srl_memory(u16 address)
 	{
-		u8 value = r_Memory->read(address);
+		u8 value = read_at(address);
 		srl(value);
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::bit(const u8 target, const u8 position)
@@ -748,9 +820,9 @@ namespace dat
 
 	void s_SharpSM83::res_memory(u16 address, u8 position)
 	{
-		u8 value = r_Memory->read(address);
+		u8 value = read_at(address);
 		res(value, position);
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::set(u8& target, u8 position)
@@ -760,19 +832,25 @@ namespace dat
 
 	void s_SharpSM83::set_memory(u16 address, u8 position)
 	{
-		u8 value = r_Memory->read(address);
+		u8 value = read_at(address);
 		set(value, position);
-		r_Memory->write(address, value);
+		write_to(address, value);
 	}
 
 	void s_SharpSM83::ret(const condition& condition)
 	{
-		if (condition())
-			ret();
+		if (!condition())
+		{
+			tick_components();
+			return;
+		}
+		
+		ret();
 	}
 
 	void s_SharpSM83::ret()
 	{
+		tick_components();
 		pop(PC);
 	}
 
@@ -784,8 +862,10 @@ namespace dat
 
 	void s_SharpSM83::call(const condition& condition, u16 address)
 	{
-		if (condition())
-			call(address);
+		if (!condition())
+			return;
+		
+		call(address);
 	}
 
 	void s_SharpSM83::call(u16 address)

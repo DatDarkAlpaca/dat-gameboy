@@ -26,10 +26,10 @@ namespace dat
 			m_Cycles = 0;
 		}
 
-		void tick(u8 cycles)
+		void tick()
 		{
-			divider += cycles;
-			m_Cycles += cycles;
+			divider++;
+			m_Cycles++;
 
 			bool isTimerActive = timerControl->is_bit_set(e_TAC::ENABLE);
 			if (!isTimerActive)

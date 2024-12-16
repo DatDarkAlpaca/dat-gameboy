@@ -2,6 +2,7 @@
 #include "memory"
 #include "memory.hpp"
 #include "gameboy/gameboy.hpp"
+#include "gameboy/components/ppu/ppu.hpp"
 
 namespace dat
 {
@@ -39,6 +40,9 @@ namespace dat
 		m_WX.initialize(&memory[WX_Address]);				// 0xFF4B
 
 		m_InterruptEnable.initialize(&memory[IE_Address]);	// 0xFFFF
+
+		// Unloaded util registers:
+		m_UnloadedPalette.initialize(&m_UnloadedData);
 	}
 
 	s_MMU::~s_MMU()
@@ -64,8 +68,6 @@ namespace dat
 
 	u8 s_MMU::read(u16 address)
 	{
-		tick_components();
-
 		/* Bootloader & Cartridge ROM */
 		// [0x0000, 0x7FFF)
 		if (address >= 0x0000 && address <= 0x7FFF)
@@ -82,7 +84,12 @@ namespace dat
 		/* VRAM */
 		// [0x8000, 0x9FFF]
 		else if (address >= 0x8000 && address <= 0x9FFF)
-			return memory[address];
+		{
+			if(r_Gameboy->ppu.vram_accessible())
+				return memory[address];
+
+			return 0xFF;
+		}
 
 		/* Cartridge RAM */
 		// [0xA000, 0xBFFF]
@@ -106,14 +113,24 @@ namespace dat
 		/* OAM */
 		// [0xFE00, 0xFE9F]
 		else if (address >= 0xFE00 && address <= 0xFE9F)
-			return memory[address];
+		{
+			// TODO: check DMA transferring
+			if (r_Gameboy->ppu.oam_accessible())
+				return memory[address];
+
+			return 0xFF;
+		}
 
 		/* Prohibited */
 		// [FEA0, FEFF]
 		else if (address >= 0xFEA0 && address <= 0xFEFF)
 		{
+#if defined(DAT_BYPASS_PROHIBITED)
+			return memory[address];
+#else
 			DAT_LOG_WARN("Prohibited read at: {}", address);
 			return 0xFF;
+#endif
 		}
 
 		/* IO Registers */
@@ -136,8 +153,6 @@ namespace dat
 
 	void s_MMU::write(u16 address, u8 value)
 	{
-		tick_components();
-
 		/* Bootloader & Cartridge*/
 		// [0x0000, 0x7FFF)
 		if (address >= 0x0000 && address <= 0x7FFF)
@@ -153,6 +168,9 @@ namespace dat
 		// [0x8000, 0x9FFF]
 		else if (address >= 0x8000 && address <= 0x9FFF)
 		{
+			if (!r_Gameboy->ppu.vram_accessible())
+				return;
+
 			memory[address] = value;
 			return;
 		}
@@ -188,6 +206,9 @@ namespace dat
 		// [0xFE00, 0xFE9F]
 		else if (address >= 0xFE00 && address <= 0xFE9F)
 		{
+			if (!r_Gameboy->ppu.oam_accessible())
+				return;
+
 			memory[address] = value;
 			return;
 		}
@@ -196,18 +217,72 @@ namespace dat
 		// [FEA0, FEFF]
 		else if (address >= 0xFEA0 && address <= 0xFEFF)
 		{
+#if defined(DAT_BYPASS_PROHIBITED)
+			memory[address] = value;
+			return;
+#else
 			DAT_LOG_WARN("Prohibited write at: {}", address);
 			return;
+#endif
 		}
 
 		/* IO Registers */
 		// [0xFF00, 0xFF7F]
 		else if (address >= 0xFF00 && address <= 0xFF7F)
 		{
+			// LCDC:
+			if (address == LCDC_Address)
+			{
+				bool lcdcOn = m_LCDC.is_bit_set(e_LCDC::LCD_PPU_ENABLE);
+				memory[address] = value;
+
+				// Display Disabled:
+				if (lcdcOn && !m_LCDC.is_bit_set(e_LCDC::LCD_PPU_ENABLE))
+				{
+					// Screen can only be turned off during VBlank:
+					if (r_Gameboy->ppu.get_video_mode() != e_VideoMode::VBLANK)
+					{
+						// TODO: simulate burn-in on the current scanline.
+						DAT_LOG_INFO("Burn-in on line: {}", m_LY.get());
+
+						r_Gameboy->ppu.turn_screen_off();
+					}
+				}
+
+				// Display Re-enabled:
+				else if(!lcdcOn && m_LCDC.is_bit_set(e_LCDC::LCD_PPU_ENABLE))
+					r_Gameboy->ppu.turn_screen_on();
+			}
+
+			// STAT:
+			if (address == STAT_Address)
+			{
+				memory[address] = value & 0xF8;
+
+				if (m_LCDC.is_bit_set(e_LCDC::LCD_PPU_ENABLE))
+					r_Gameboy->ppu.handle_stat();
+
+				return;
+			}
+
 			// LY
-			if (address == LY_Address)
+			else if (address == LY_Address)
 			{
 				memory[address] = 0x0;
+				return;
+			}
+
+			// LYC
+			else if (address == LYC_Address)
+			{
+				memory[address] = value;
+
+				if (m_LCDC.is_bit_set(e_LCDC::LCD_PPU_ENABLE))
+				{
+					r_Gameboy->ppu.handle_lyc();
+					r_Gameboy->ppu.handle_stat();
+				}
+
 				return;
 			}
 
@@ -251,11 +326,27 @@ namespace dat
 		DAT_LOG_ERROR("Write to unmapped memory at address: {}", address);
 	}
 
-	void s_MMU::tick_components()
+	s_BGP& s_MMU::BGP()
 	{
-		// TODO: implement m-cycle accuracy.
-		// r_Gameboy->cpu.tick();
-		// r_Gameboy->ppu.tick();
-		// ...
+		if (!r_Gameboy->ppu.palettes_accessible())
+			return m_UnloadedPalette;
+
+		return m_BGP;
+	}
+
+	s_OBP0& s_MMU::OBP0()
+	{
+		if (!r_Gameboy->ppu.palettes_accessible())
+			return m_UnloadedPalette;
+
+		return m_OBP0;
+	}
+
+	s_OBP1& s_MMU::OBP1()
+	{
+		if (!r_Gameboy->ppu.palettes_accessible())
+			return m_UnloadedPalette;
+
+		return m_OBP1;
 	}
 }
