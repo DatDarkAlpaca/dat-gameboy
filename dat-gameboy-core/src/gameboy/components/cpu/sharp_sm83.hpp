@@ -41,6 +41,8 @@ namespace dat
 		void restart();
 
 	private:
+		bool execute_standard_mode();
+
 		void tick_components();
 
 	private:
@@ -63,7 +65,7 @@ namespace dat
 
 		u16 fetch_word();
 
-		s_Instruction fetch_instruction();
+		void fetch_instruction();
 
 	public:
 		u8 A;
@@ -81,8 +83,8 @@ namespace dat
 		using condition = std::function<bool()>;
 
 		condition condNZ = [&]() -> bool { return !F.Z; };
-		condition condZ  = [&]() -> bool { return  F.Z; };
 		condition condNC = [&]() -> bool { return !F.C; };
+		condition condZ  = [&]() -> bool { return  F.Z; };
 		condition condC  = [&]() -> bool { return  F.C; };
 
 	private:
@@ -95,6 +97,7 @@ namespace dat
 
 		bool m_isPrefixActive = false;
 		bool m_IME = false;
+		u8 m_PendingCycles = 0;
 
 	private:
 		inline void load_a16_SP()

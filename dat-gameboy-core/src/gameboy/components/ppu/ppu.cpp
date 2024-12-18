@@ -36,9 +36,6 @@ namespace dat
 
 	void s_PPU::tick()
 	{
-		s_SCX& SCX = r_Memory->SCX();
-		s_LY& LY = r_Memory->LY();
-
 		if (!r_Memory->lcdc().is_bit_set(e_LCDC::LCD_PPU_ENABLE))
 		{
 			++m_OffscreenCycles;
@@ -52,6 +49,9 @@ namespace dat
 			return;
 		}
 
+		s_SCX& SCX = r_Memory->SCX();
+		s_LY& LY = r_Memory->LY();
+
 		++m_Cycles;
 
 		switch (m_CurrentMode)
@@ -62,6 +62,7 @@ namespace dat
 					return;
 
 				m_Cycles = 0;
+				++LY;
 
 				handle_lyc();
 
@@ -124,7 +125,7 @@ namespace dat
 
 				handle_stat();
 
-				// render_background_line();
+				render_background_line();
 				// render_window_line();
 				// render_sprites_line();
 

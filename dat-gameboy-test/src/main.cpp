@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 	dat::initialize_logger();
 	testing::InitGoogleTest(&argc, argv);
 
-	::testing::GTEST_FLAG(filter) = "GameboyFileTests_0X*";
+	//::testing::GTEST_FLAG(filter) = "GameboyFileTests_PREFIX*";
 
 	return RUN_ALL_TESTS(); 
 

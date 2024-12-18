@@ -59,25 +59,12 @@ namespace dat
 	void s_SharpSM83::tick()
 	{
 		bool interruptRequested = false;
-
+		
 		switch (m_CurrentMode)
 		{
 			case e_SharpMode::STANDARD:
 			{
-				if (m_Instruction.bytes == 0)
-				{
-					m_Instruction = fetch_instruction();
-					return;
-				}
-
-				if (m_isPrefixActive)
-					execute_cb_instruction();
-				else
-					execute_instruction();
-
-				m_Instruction = fetch_instruction();
-
-				interruptRequested = m_IME && interrupts_requested();
+				interruptRequested = execute_standard_mode();
 			} break;
 
 			case e_SharpMode::HALTED:
@@ -96,7 +83,7 @@ namespace dat
 
 			case e_SharpMode::HALT_BUG:
 			{
-				m_Instruction = fetch_instruction();
+				fetch_instruction();
 				--PC;
 
 				if (m_isPrefixActive)
@@ -110,16 +97,10 @@ namespace dat
 
 			case e_SharpMode::IME_ENABLED:
 			{
+				interruptRequested = execute_standard_mode();
+
 				m_IME = true;
-				interruptRequested = m_IME && interrupts_requested();
-
 				m_CurrentMode = e_SharpMode::STANDARD;
-				m_Instruction = fetch_instruction();
-
-				if (m_isPrefixActive)
-					execute_cb_instruction();
-				else
-					execute_instruction();
 			} break;
 		}
 
@@ -142,7 +123,36 @@ namespace dat
 		SP.set(0x0000);
 		PC.set(0x0000);
 
+		m_PendingCycles = 0;
 		m_Instruction = {};
+	}
+
+	bool s_SharpSM83::execute_standard_mode()
+	{
+		if (m_Instruction.bytes == 0)
+		{
+			fetch_instruction();
+			return false;
+		}
+
+		// First cycle:
+		if (m_PendingCycles == m_Instruction.tStates / TCyclesPerMCycle)
+		{
+			if (m_isPrefixActive)
+				execute_cb_instruction();
+			else
+				execute_instruction();
+		}
+
+		--m_PendingCycles;
+
+		if (m_PendingCycles == 0)
+		{
+			fetch_instruction();
+			return m_IME && interrupts_requested();
+		}
+
+		return false;
 	}
 
 	void s_SharpSM83::tick_components()
@@ -204,7 +214,7 @@ namespace dat
 
 		tick_components();
 		tick_components();
-		tick_components();	
+		tick_components();
 	}
 
 	void s_SharpSM83::execute_instruction()
@@ -295,10 +305,12 @@ namespace dat
 		return static_cast<u16>((msb << 8) | lsb);
 	}
 
-	s_Instruction s_SharpSM83::fetch_instruction()
+	void s_SharpSM83::fetch_instruction()
 	{		
 		u8 opcode = fetch_byte();
-		return get_instruction_from_opcode(opcode, m_isPrefixActive);
+		m_Instruction = get_instruction_from_opcode(opcode, m_isPrefixActive);
+
+		m_PendingCycles = m_Instruction.tStates / TCyclesPerMCycle;
 	}
 }
 
@@ -555,13 +567,8 @@ namespace dat
 
 	void s_SharpSM83::rra()
 	{
-		bool carryBit = check_bit(A, 0);
-		A = (A >> 1) | (F.C << 7);
-
-		F.Z = (A == 0);
-		F.N = 0;
-		F.H = 0;
-		F.C = carryBit;
+		rr(A);
+		F.Z = 0;
 	}
 
 	void s_SharpSM83::rlca()
@@ -605,8 +612,11 @@ namespace dat
 	void s_SharpSM83::jp(const condition& condition, u16 address)
 	{
 		if (!condition())
+		{
+			--m_PendingCycles;
 			return;
-		
+		}
+
 		jp(address);
 	}
 
@@ -619,7 +629,10 @@ namespace dat
 	void s_SharpSM83::jr(const condition& condition, i8 offset)
 	{
 		if (!condition())
+		{
+			--m_PendingCycles;
 			return;
+		}
 		
 		jr(offset);
 	}
@@ -716,8 +729,9 @@ namespace dat
 
 	void s_SharpSM83::rr(u8& target)
 	{
+		u8 carry = F.C;
 		bool carryBit = check_bit(target, 0);
-		target = static_cast<u8>(target >> 1) | (F.C << 7);
+		target = static_cast<u8>(target >> 1) | (carry << 7);
 
 		F.Z = (target == 0);
 		F.N = 0;
@@ -841,7 +855,7 @@ namespace dat
 	{
 		if (!condition())
 		{
-			tick_components();
+			m_PendingCycles -= 3;
 			return;
 		}
 		
@@ -863,7 +877,10 @@ namespace dat
 	void s_SharpSM83::call(const condition& condition, u16 address)
 	{
 		if (!condition())
+		{
+			m_PendingCycles -= 3;
 			return;
+		}
 		
 		call(address);
 	}

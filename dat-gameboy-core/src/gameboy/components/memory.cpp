@@ -68,6 +68,10 @@ namespace dat
 
 	u8 s_MMU::read(u16 address)
 	{
+#if defined(DAT_MEMORY_TEST_BYPASS)
+		return memory[address];
+#endif
+
 		/* Bootloader & Cartridge ROM */
 		// [0x0000, 0x7FFF)
 		if (address >= 0x0000 && address <= 0x7FFF)
@@ -125,12 +129,8 @@ namespace dat
 		// [FEA0, FEFF]
 		else if (address >= 0xFEA0 && address <= 0xFEFF)
 		{
-#if defined(DAT_BYPASS_PROHIBITED)
-			return memory[address];
-#else
 			DAT_LOG_WARN("Prohibited read at: {}", address);
 			return 0xFF;
-#endif
 		}
 
 		/* IO Registers */
@@ -153,6 +153,11 @@ namespace dat
 
 	void s_MMU::write(u16 address, u8 value)
 	{
+#if defined(DAT_MEMORY_TEST_BYPASS)
+		memory[address] = value;
+		return;
+#endif
+
 		/* Bootloader & Cartridge*/
 		// [0x0000, 0x7FFF)
 		if (address >= 0x0000 && address <= 0x7FFF)
@@ -217,13 +222,8 @@ namespace dat
 		// [FEA0, FEFF]
 		else if (address >= 0xFEA0 && address <= 0xFEFF)
 		{
-#if defined(DAT_BYPASS_PROHIBITED)
-			memory[address] = value;
-			return;
-#else
 			DAT_LOG_WARN("Prohibited write at: {}", address);
 			return;
-#endif
 		}
 
 		/* IO Registers */

@@ -102,13 +102,7 @@ void GameboyTest::run_test(const std::filesystem::path& filepath)
 		gameboy.cpu.tick();
 
 		for (const auto& [address, value, type] : testEntry.cycles)
-		{				
-			if (address == gameboy.cpu.PC.get())
-			{
-				gameboy.cpu.tick();
-				DAT_LOG_INFO("{} [{}] : {} [{}]", value, address, gameboy.memory.read(address), address);
-			}
-		}
+			gameboy.cpu.tick();
 
 		compare_cpu_data(testEntry.finalCondition);
 		++index;

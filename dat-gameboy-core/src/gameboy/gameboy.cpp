@@ -19,17 +19,7 @@ namespace dat
 
 	void s_Gameboy::tick(e_Component callerComponent)
 	{
-		for (u8 i = 0; i < 4; ++i)
-		{
-			if (callerComponent & e_Component::CPU)
-				cpu.tick();
-
-			if (callerComponent & e_Component::PPU)
-				ppu.tick();
-
-			if (callerComponent & e_Component::TIMER)
-				timer.tick();
-		}
+		// TODO: remove
 	}
 
 	void s_Gameboy::tick_all_except_cpu()

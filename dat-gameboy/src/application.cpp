@@ -113,7 +113,9 @@ namespace dat
 		gameboy->ppu.reset_screen_refresh();
 
 		while (!gameboy->ppu.is_requesting_screen_refresh())
+		{
 			gameboy->cpu.tick();
+		}
 
 		gameboyFrame->update(gameboy->ppu.get_framebuffer());
 	}
