@@ -145,17 +145,27 @@ namespace dat
 				u16 romBankBits = value & 0x1F;
 				m_RomBank = romBankBits;
 
-				if (value == 0x0) 
-					m_RomBank = 0x1;
-				
-				if (value == 0x20) 
-					m_RomBank = 0x21;
-				
-				if (value == 0x40) 
-					m_RomBank = 0x41;
+				switch (value)
+				{
+					case 0x0:
+						m_RomBank = 0x1;
+						break;
 
-				if (value == 0x60) 
-					m_RomBank = 0x61;
+					case 0x20:
+						m_RomBank = 0x21;
+						break;
+
+					case 0x40:
+						m_RomBank = 0x41;
+						break;
+
+					case 0x60:
+						m_RomBank = 0x61;
+						break;
+				}
+
+				u16 bankBits = value & 0x1F;
+				m_RomBank = bankBits;
 
 				return;
 			}
