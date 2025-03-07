@@ -29,7 +29,7 @@ namespace dat
 		);
 
 		if (!glfwWindow)
-			DAT_LOG_CRITICAL("Failed to create a valid GLFW window. GLFW is probably uninitialized");
+			DAT_LOG_CRITICAL("	");
 
 		m_Window.reset(glfwWindow);
 

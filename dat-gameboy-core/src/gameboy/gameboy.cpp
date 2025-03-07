@@ -14,12 +14,7 @@ namespace dat
 		cpu.initialize(this, &memory);
 		memory.initialize(this);
 		ppu.initialize(&memory);
-		timer.initialize(&memory.DIV(), &memory.TAC(), &memory.TIMA(), &memory.TMA(), &memory.IF());
-	}
-
-	void s_Gameboy::tick(e_Component callerComponent)
-	{
-		// TODO: remove
+		timer.initialize(&memory, &memory.DIV(), &memory.TAC(), &memory.TIMA(), &memory.TMA(), &memory.IF());
 	}
 
 	void s_Gameboy::tick_all_except_cpu()

@@ -5,10 +5,10 @@
 
 namespace dat
 {
-	constexpr inline u16 DIV_Address = 0xFF04;
+	constexpr inline u16 DIV_Address  = 0xFF04;
 	constexpr inline u16 TIMA_Address = 0xFF05;
-	constexpr inline u16 TMA_Address = 0xFF06;
-	constexpr inline u16 TAC_Address = 0xFF07;
+	constexpr inline u16 TMA_Address  = 0xFF06;
+	constexpr inline u16 TAC_Address  = 0xFF07;
 	
 	using s_DIV = s_HardwareRegister<DataRegister>;
 	using s_TIMA = s_HardwareRegister<DataRegister>;

@@ -8,6 +8,7 @@ namespace dat
 	constexpr static inline u32 CyclesPerFrame = 70224;
 
 	constexpr static inline u32 ClockRate = 4194304;
+	constexpr static inline u32 DIVRate = 256;			// increase DIV every 256x t-cycles
 
 	constexpr static inline u32 GameboyScreenWidth = 160;
 	constexpr static inline u32 GameboyScreenHeight = 144;

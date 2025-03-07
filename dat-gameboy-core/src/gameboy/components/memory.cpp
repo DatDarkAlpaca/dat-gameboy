@@ -230,8 +230,14 @@ namespace dat
 		// [0xFF00, 0xFF7F]
 		else if (address >= 0xFF00 && address <= 0xFF7F)
 		{
+			if (address >= DIV_Address && address <= TAC_Address)
+			{
+				r_Gameboy->timer.write(address, value);
+				return;
+			}
+
 			// LCDC:
-			if (address == LCDC_Address)
+			else if (address == LCDC_Address)
 			{
 				bool lcdcOn = m_LCDC.is_bit_set(e_LCDC::LCD_PPU_ENABLE);
 				memory[address] = value;
@@ -264,6 +270,8 @@ namespace dat
 
 				return;
 			}
+
+			
 
 			// LY
 			else if (address == LY_Address)

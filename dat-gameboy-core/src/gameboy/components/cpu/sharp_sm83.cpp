@@ -97,10 +97,15 @@ namespace dat
 
 			case e_SharpMode::IME_ENABLED:
 			{
-				interruptRequested = execute_standard_mode();
+				if (m_isPrefixActive)
+					execute_cb_instruction();
+				else
+					execute_instruction();
 
 				m_IME = true;
 				m_CurrentMode = e_SharpMode::STANDARD;
+
+				interruptRequested = m_IME && interrupts_requested();
 			} break;
 		}
 
@@ -162,7 +167,7 @@ namespace dat
 
 	bool s_SharpSM83::interrupts_requested() const
 	{
-		return r_Memory->IE().get() & r_Memory->IF().get() & 0x1F;
+		return (r_Memory->IE().get() & r_Memory->IF().get()) & 0x1F;
 	}
 
 	void s_SharpSM83::execute_interrupts()
@@ -181,27 +186,27 @@ namespace dat
 
 		if (check_bit(interruptsRequested, 0))
 		{
-			interruptFlags &= ~bit_value(interruptsRequested, 0);
+			interruptFlags &= ~0x01;
 			vector = interrupt::VBlank;
 		}
 		else if (check_bit(interruptsRequested, 1))
 		{
-			interruptFlags &= ~bit_value(interruptsRequested, 1);
+			interruptFlags &= ~0x02;
 			vector = interrupt::LCDCStatus;
 		}
 		else if (check_bit(interruptsRequested, 2))
 		{
-			interruptFlags &= ~bit_value(interruptsRequested, 2);
+			interruptFlags &= ~0x04;
 			vector = interrupt::Timer;
 		}
 		else if (check_bit(interruptsRequested, 3))
 		{
-			interruptFlags &= ~bit_value(interruptsRequested, 3);
+			interruptFlags &= ~0x08;
 			vector = interrupt::Serial;
 		}
 		else if (check_bit(interruptsRequested, 4))
 		{
-			interruptFlags &= ~bit_value(interruptsRequested, 4);
+			interruptFlags &= ~0x10;
 			vector = interrupt::Joypad;
 		}
 
@@ -215,6 +220,8 @@ namespace dat
 		tick_components();
 		tick_components();
 		tick_components();
+
+		m_CurrentMode = e_SharpMode::STANDARD;
 	}
 
 	void s_SharpSM83::execute_instruction()
@@ -310,6 +317,11 @@ namespace dat
 		u8 opcode = fetch_byte();
 		m_Instruction = get_instruction_from_opcode(opcode, m_isPrefixActive);
 
+		if (m_Instruction.opcode == 0xFB)
+		{
+			auto xx = 1;
+		}
+
 		m_PendingCycles = m_Instruction.tStates / TCyclesPerMCycle;
 	}
 }
@@ -324,6 +336,7 @@ namespace dat
 	void s_SharpSM83::stop()
 	{
 		m_CurrentMode = e_SharpMode::STOPPED;
+		// TODO: handle DIV and registers that get affected by stop()
 	}
 
 	void s_SharpSM83::halt()
@@ -332,7 +345,7 @@ namespace dat
 			m_CurrentMode = e_SharpMode::HALTED;
 		else
 		{
-			if (r_Memory->IE().get() & r_Memory->IF().get() & 0x1F)
+			if (interrupts_requested())
 				m_CurrentMode = e_SharpMode::HALT_BUG;
 			else
 				m_CurrentMode = e_SharpMode::HALT_DI;
@@ -870,8 +883,8 @@ namespace dat
 
 	void s_SharpSM83::reti()
 	{
+		m_IME = true;
 		ret();
-		ei();
 	}
 
 	void s_SharpSM83::call(const condition& condition, u16 address)

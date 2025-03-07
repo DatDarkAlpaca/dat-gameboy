@@ -10,8 +10,6 @@ namespace dat
 		s_Gameboy();
 
 	public:
-		void tick(e_Component components = e_Component::ALL);
-		
 		void tick_all_except_cpu();
 
 	public:
